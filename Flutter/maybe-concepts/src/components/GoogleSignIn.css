@@ -1,0 +1,66 @@
+.google-signin {
+  display: flex;
+  justify-content: center;
+  margin: 1.5rem 0;
+}
+
+.google-setup {
+  margin: 1.5rem 0;
+  padding: 1.25rem;
+  border: 1px solid rgba(240, 237, 232, 0.2);
+  background: #111;
+  font-size: 1.2rem;
+}
+
+.google-setup pre {
+  margin: 0.75rem 0;
+  padding: 0.75rem;
+  background: #000;
+  overflow-x: auto;
+  font-size: 1.1rem;
+}
+
+.google-setup code {
+  color: var(--accent);
+}
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1.5rem 0;
+  color: var(--fg-muted);
+  font-size: 1.2rem;
+  text-transform: uppercase;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(240, 237, 232, 0.2);
+}
+
+.account-profile {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.account-profile img {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+}
+
+.account-badge {
+  display: inline-block;
+  margin-top: 0.35rem;
+  padding: 0.25rem 0.6rem;
+  border: 1px solid rgba(240, 237, 232, 0.25);
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08rem;
+}

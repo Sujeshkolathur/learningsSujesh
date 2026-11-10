@@ -1,0 +1,25 @@
+# Local SonarQube for istay-backend analysis.
+# Usage: docker compose -f docker-compose.sonarqube.yml up -d
+
+services:
+  sonarqube:
+    image: sonarqube:10.6.0-community
+    container_name: istay-sonarqube
+    environment:
+      SONAR_ES_BOOTSTRAP_CHECKS_DISABLE: "true"
+    ports:
+      - "9000:9000"
+    volumes:
+      - istay-sonar-data:/opt/sonarqube/data
+      - istay-sonar-logs:/opt/sonarqube/logs
+      - istay-sonar-extensions:/opt/sonarqube/extensions
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+    restart: unless-stopped
+
+volumes:
+  istay-sonar-data:
+  istay-sonar-logs:
+  istay-sonar-extensions:

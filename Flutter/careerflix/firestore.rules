@@ -1,0 +1,116 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function email() {
+      return request.auth.token.email == null
+        ? ''
+        : request.auth.token.email.lower();
+    }
+
+    function hasUserDoc() {
+      return exists(/databases/$(database)/documents/careerUsers/$(request.auth.uid));
+    }
+
+    function userDoc() {
+      return get(/databases/$(database)/documents/careerUsers/$(request.auth.uid)).data;
+    }
+
+    function role() {
+      return userDoc().role;
+    }
+
+    function isStaff() {
+      return signedIn() && hasUserDoc() && role() in ['hiring_manager', 'admin'];
+    }
+
+    function isAdmin() {
+      return signedIn() && hasUserDoc() && role() == 'admin';
+    }
+
+    function hasRolesConfig() {
+      return exists(/databases/$(database)/documents/careerConfig/roles);
+    }
+
+    function rolesConfig() {
+      return get(/databases/$(database)/documents/careerConfig/roles).data;
+    }
+
+    match /careerConfig/{docId} {
+      allow read: if true;
+      allow create: if signedIn()
+        && docId == 'roles'
+        && !hasRolesConfig()
+        && email() in request.resource.data.admins;
+      allow update: if isAdmin();
+      allow delete: if false;
+    }
+
+    match /careerUsers/{uid} {
+      allow read: if signedIn() && (request.auth.uid == uid || isStaff());
+
+      allow create: if signedIn()
+        && request.auth.uid == uid
+        && request.resource.data.email == email()
+        && (
+          request.resource.data.role == 'candidate'
+          || (
+            request.resource.data.role == 'admin'
+            && hasRolesConfig()
+            && email() in rolesConfig().admins
+          )
+          || (
+            request.resource.data.role == 'hiring_manager'
+            && hasRolesConfig()
+            && email() in rolesConfig().hiringManagers
+          )
+        );
+
+      allow update: if isAdmin()
+        || (
+          signedIn()
+          && request.auth.uid == uid
+          && request.resource.data.role == resource.data.role
+          && request.resource.data.email == resource.data.email
+        );
+
+      allow delete: if isAdmin();
+    }
+
+    match /careerProfiles/{profileId} {
+      allow read: if isStaff()
+        || (signedIn() && resource.data.ownerUid == request.auth.uid);
+
+      allow create: if signedIn()
+        && hasUserDoc()
+        && request.resource.data.ownerUid == request.auth.uid
+        && (
+          (role() == 'candidate' && profileId == 'profile_' + request.auth.uid)
+          || role() == 'admin'
+        );
+
+      allow update: if isAdmin()
+        || (
+          signedIn()
+          && resource.data.ownerUid == request.auth.uid
+          && request.resource.data.ownerUid == resource.data.ownerUid
+        );
+
+      allow delete: if isAdmin()
+        || (signedIn() && resource.data.ownerUid == request.auth.uid);
+    }
+
+    match /households/{householdId}/days/{dayId} {
+      allow read, write: if true;
+    }
+    match /households/{householdId}/weeks/{weekId} {
+      allow read, write: if true;
+    }
+    match /households/{householdId}/config/{docId} {
+      allow read, write: if true;
+    }
+  }
+}

@@ -1,0 +1,91 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply font-sans antialiased;
+    background-color: #faf6f0;
+    color: #1a1618;
+  }
+
+  ::selection {
+    background-color: rgba(201, 169, 98, 0.35);
+    color: #1a1618;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@layer utilities {
+  .countdown-card {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .countdown-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      105deg,
+      transparent 40%,
+      rgba(201, 169, 98, 0.12) 50%,
+      transparent 60%
+    );
+    transform: translateX(-100%);
+    animation: card-shimmer 4s ease-in-out infinite;
+  }
+}
+
+@keyframes card-shimmer {
+  0%,
+  70%,
+  100% {
+    transform: translateX(-100%);
+  }
+  85% {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .countdown-card::after {
+    animation: none;
+    display: none;
+  }
+}
+
+.voice-progress::-webkit-slider-thumb {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #5c1a2e;
+  cursor: pointer;
+}
+
+.voice-progress::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border: none;
+  border-radius: 50%;
+  background: #5c1a2e;
+  cursor: pointer;
+}

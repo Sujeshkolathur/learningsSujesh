@@ -1,0 +1,11 @@
+prep:
+  dry-run: false
+  schedule:
+    # Free Render sleeps when idle — use GitHub Actions cron to call /api/reminders/*/send
+    internal-enabled: false
+
+ai:
+  provider: gemini
+
+notification:
+  provider: telegram

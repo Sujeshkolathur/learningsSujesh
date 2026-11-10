@@ -1,0 +1,30 @@
+.connect-page {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 4rem 1.5rem;
+  color: var(--fg);
+}
+
+.connect-page h1 {
+  font-family: var(--font-heading);
+  font-weight: 300;
+  font-size: 2.4rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin: 0 0 0.5rem;
+}
+
+.connect-lead {
+  color: var(--fg-muted);
+  margin-bottom: 2rem;
+}
+
+.connect-meta {
+  margin: 2rem 0;
+  font-size: 1.3rem;
+  color: var(--fg-muted);
+}
+
+.connect-meta p {
+  margin: 0.25rem 0;
+}

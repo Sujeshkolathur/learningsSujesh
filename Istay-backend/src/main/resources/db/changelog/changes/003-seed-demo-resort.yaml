@@ -1,0 +1,50 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003-seed-demo-resort
+      author: istay
+      changes:
+        - insert:
+            tableName: property
+            columns:
+              - column:
+                  name: property_id
+                  value: DEMO-01
+              - column:
+                  name: name
+                  value: Demo Resort
+        - insert:
+            tableName: room_type
+            columns:
+              - column:
+                  name: room_type_id
+                  value: STD
+              - column:
+                  name: property_id
+                  value: DEMO-01
+              - column:
+                  name: name
+                  value: Standard
+              - column:
+                  name: total_rooms
+                  valueNumeric: 10
+              - column:
+                  name: nightly_rate
+                  valueNumeric: 120.00
+        - insert:
+            tableName: room_type
+            columns:
+              - column:
+                  name: room_type_id
+                  value: DLX
+              - column:
+                  name: property_id
+                  value: DEMO-01
+              - column:
+                  name: name
+                  value: Deluxe
+              - column:
+                  name: total_rooms
+                  valueNumeric: 5
+              - column:
+                  name: nightly_rate
+                  valueNumeric: 180.00

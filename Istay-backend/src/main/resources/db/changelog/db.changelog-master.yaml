@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/changes/001-property-room-type.yaml
+  - include:
+      file: db/changelog/changes/002-reservation.yaml
+  - include:
+      file: db/changelog/changes/003-seed-demo-resort.yaml
+  - include:
+      file: db/changelog/changes/004-reservation-list-index.yaml

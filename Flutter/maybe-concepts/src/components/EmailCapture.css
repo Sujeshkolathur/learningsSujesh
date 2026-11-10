@@ -1,0 +1,39 @@
+.footer-block__heading {
+  margin: 0 0 1.5rem;
+  font-family: var(--font-body);
+  font-size: 1.4rem;
+  letter-spacing: 0.15rem;
+  text-transform: uppercase;
+  color: var(--fg);
+}
+
+.newsletter-form__field-wrapper {
+  display: flex;
+  max-width: 420px;
+  margin: 0 auto;
+  border-bottom: 1px solid var(--fg);
+}
+
+.newsletter-form input {
+  flex: 1;
+  padding: 1rem 0;
+  border: none;
+  background: transparent;
+  color: var(--fg);
+  font: inherit;
+  outline: none;
+}
+
+.newsletter-form__button {
+  border: none;
+  background: transparent;
+  color: var(--fg);
+  font-size: 1.6rem;
+  cursor: pointer;
+  padding: 0 0.5rem;
+}
+
+.capture-msg {
+  margin-top: 1rem;
+  font-size: 1.2rem;
+}

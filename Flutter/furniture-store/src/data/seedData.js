@@ -1,0 +1,131 @@
+export const CATEGORIES = ['All', 'Chair', 'Table', 'Sofa', 'Bed', 'Storage'];
+
+export const SEED_USERS = [
+  {
+    id: 'admin-1',
+    name: 'Store Admin',
+    email: 'admin@furniture.com',
+    phone: '9999999999',
+    password: 'admin123',
+    role: 'admin',
+  },
+  {
+    id: 'user-demo',
+    name: 'Sujesh K R',
+    email: 'sujeshkolathur@gmail.com',
+    phone: '9526494378',
+    password: 'demo123',
+    role: 'customer',
+  },
+];
+
+export const SEED_PRODUCTS = [
+  {
+    id: 'prod-1',
+    name: 'Oak Dining Table',
+    description: 'Solid oak dining table seating 6. Scratch-resistant finish with tapered legs.',
+    price: 15000,
+    stock: 12,
+    category: 'Table',
+    images: [
+      'https://images.unsplash.com/photo-1617806118233-18e1de247200?w=800&q=80',
+      'https://images.unsplash.com/photo-1595428774223-ef52624120d2?w=800&q=80',
+    ],
+    rating: 4.7,
+    reviews: 24,
+  },
+  {
+    id: 'prod-2',
+    name: 'Ergonomic Lounge Chair',
+    description: 'Comfortable lounge chair with lumbar support and breathable fabric upholstery.',
+    price: 8500,
+    stock: 20,
+    category: 'Chair',
+    images: [
+      'https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=800&q=80',
+      'https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?w=800&q=80',
+    ],
+    rating: 4.5,
+    reviews: 18,
+  },
+  {
+    id: 'prod-3',
+    name: 'Linen 3-Seater Sofa',
+    description: 'Minimalist sofa with removable linen covers and high-density foam cushions.',
+    price: 32000,
+    stock: 8,
+    category: 'Sofa',
+    images: [
+      'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800&q=80',
+      'https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?w=800&q=80',
+    ],
+    rating: 4.8,
+    reviews: 31,
+  },
+  {
+    id: 'prod-4',
+    name: 'Queen Platform Bed',
+    description: 'Low-profile platform bed with built-in headboard storage compartments.',
+    price: 28000,
+    stock: 6,
+    category: 'Bed',
+    images: [
+      'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=800&q=80',
+      'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=800&q=80',
+    ],
+    rating: 4.6,
+    reviews: 15,
+  },
+  {
+    id: 'prod-5',
+    name: 'Walnut Study Desk',
+    description: 'Compact desk with cable management tray and two drawer units.',
+    price: 12000,
+    stock: 15,
+    category: 'Table',
+    images: [
+      'https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=800&q=80',
+    ],
+    rating: 4.4,
+    reviews: 11,
+  },
+  {
+    id: 'prod-6',
+    name: 'Modular Wardrobe',
+    description: '3-door wardrobe with hanging space, shelves, and mirrored panel.',
+    price: 45000,
+    stock: 4,
+    category: 'Storage',
+    images: [
+      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80',
+    ],
+    rating: 4.3,
+    reviews: 9,
+  },
+  {
+    id: 'prod-7',
+    name: 'Accent Armchair',
+    description: 'Velvet accent chair with gold-finish legs — perfect for reading corners.',
+    price: 9800,
+    stock: 0,
+    category: 'Chair',
+    images: [
+      'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&q=80',
+    ],
+    rating: 4.2,
+    reviews: 7,
+  },
+  {
+    id: 'prod-8',
+    name: 'Coffee Table Set',
+    description: 'Nested coffee tables in matte black metal and tempered glass tops.',
+    price: 6500,
+    stock: 18,
+    category: 'Table',
+    images: [
+      'https://images.unsplash.com/photo-1532372320572-cda25653a26d?w=800&q=80',
+    ],
+    rating: 4.5,
+    reviews: 13,
+  },
+];

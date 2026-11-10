@@ -1,0 +1,54 @@
+spring:
+  application:
+    name: interview-prep-reminder
+
+server:
+  port: ${PORT:8080}
+
+prep:
+  api-secret: ${PREP_API_SECRET:}
+  candidate-name: Sujesh K R
+  target-role: Senior Java Developer / Google L4-L5 SWE
+  timezone: Asia/Kolkata
+  dry-run: true
+  schedule:
+    internal-enabled: true
+    morning-cron: "0 0 7 * * *"
+    evening-cron: "0 0 20 * * *"
+    hourly-cron: "0 0 * * * *"
+    hourly-enabled: true
+    hourly-active-from: 7
+    hourly-active-to: 22
+  job-portals:
+    naukri: https://www.naukri.com/
+    naukri-gulf: https://www.naukrigulf.com/
+    linkedin: https://www.linkedin.com/jobs/
+
+# Free AI (pick one provider — no paid OpenAI required)
+ai:
+  enabled: true
+  provider: ollama
+  api-key: ${GEMINI_API_KEY:${GROQ_API_KEY:}}
+  base-url: ${AI_BASE_URL:}
+  model: ${AI_MODEL:}
+  temperature: 0.85
+  max-tokens: 1800
+  candidate-context: |
+    Sujesh K R — Senior Java Developer (7.2 years).
+    Skills: Java, Spring Boot, Spring Cloud, Microservices, Kafka, ActiveMQ, React.js.
+    Cloud: Azure, AWS, GCP. DevOps: Azure DevOps, GitHub Actions, Docker, Terraform.
+    Experience: Infosys, UST (T-Mobile), Altimetrik, G10X (Trader Joe's retail microservices).
+    Goals: LeetCode daily, DSA, Google interviews, apply on Naukri/Naukri Gulf/LinkedIn.
+
+# Free notifications (pick one provider)
+notification:
+  provider: console
+  telegram:
+    bot-token: ${TELEGRAM_BOT_TOKEN:}
+    chat-id: ${TELEGRAM_CHAT_ID:}
+  callmebot:
+    phone: ${CALLMEBOT_PHONE:919526494378}
+    api-key: ${CALLMEBOT_API_KEY:}
+  ntfy:
+    server: https://ntfy.sh
+    topic: ${NTFY_TOPIC:}

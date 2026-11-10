@@ -1,0 +1,36 @@
+﻿{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "CS Routine (Edge)",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "deviceId": "edge",
+      "args": ["--web-port=5175"]
+    },
+    {
+      "name": "CS Routine (Chrome)",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "deviceId": "chrome",
+      "args": ["--web-port=5175"]
+    },
+    {
+      "name": "CS Routine (Windows)",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "deviceId": "windows"
+    },
+    {
+      "name": "CS Routine (Web Server)",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "deviceId": "web-server",
+      "args": ["--web-hostname=localhost", "--web-port=5175"]
+    }
+  ]
+}

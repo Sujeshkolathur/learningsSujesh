@@ -1,0 +1,29 @@
+# Local development defaults. Override with env vars when needed.
+spring:
+  datasource:
+    url: ${ISTAY_DB_URL:jdbc:postgresql://localhost:5432/istay}
+    username: ${ISTAY_DB_USERNAME:istay}
+    password: ${ISTAY_DB_PASSWORD:istay}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+
+istay:
+  security:
+    actuator-open: true
+    open-api-enabled: true
+    jwt:
+      # Local-only default (32+ bytes). Never use in prod.
+      secret: ${ISTAY_JWT_SECRET:aXN0YXktbG9jYWwtc2VjcmV0LWtleS0zMi1ieXRlcy1taW4hISE=}

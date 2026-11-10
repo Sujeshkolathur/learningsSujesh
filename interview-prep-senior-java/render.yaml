@@ -1,0 +1,23 @@
+# Render.com — free tier Web Service (Docker)
+# Docs: https://render.com/docs/deploy-docker
+services:
+  - type: web
+    name: interview-prep-reminder
+    runtime: docker
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: PREP_API_SECRET
+        generateValue: true
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: TELEGRAM_CHAT_ID
+        sync: false
+      - key: CALLMEBOT_API_KEY
+        sync: false
+      - key: CALLMEBOT_PHONE
+        value: "919526494378"

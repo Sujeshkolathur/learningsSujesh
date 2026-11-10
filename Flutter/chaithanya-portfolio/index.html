@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Chaithanya — BIM Designer. Portfolio of building information modeling projects and consultation booking." />
+  <title>Chaithanya | BIM Designer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="header">
+    <nav class="nav container">
+      <a class="brand" href="#top">Chaithanya<span>.</span></a>
+      <button class="menu-btn" type="button" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+      <ul class="nav-list">
+        <li><a href="#about">About</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#services">Services</a></li>
+        <li><a class="btn btn-nav" href="#booking">Book a session</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="container hero-grid">
+        <div class="hero-text">
+          <p class="label">BIM Designer</p>
+          <h1>Building smarter models.<br />Delivering clearer projects.</h1>
+          <p class="intro">
+            I help architects, engineers, and contractors turn complex buildings into
+            coordinated, clash-free BIM models — from concept to construction documentation.
+          </p>
+          <div class="hero-actions">
+            <a class="btn" href="#projects">View projects</a>
+            <a class="btn btn-outline" href="#booking">Schedule consultation</a>
+          </div>
+        </div>
+        <div class="hero-panel" aria-hidden="true">
+          <div class="blueprint-card">
+            <div class="grid-lines"></div>
+            <div class="model-block block-a"></div>
+            <div class="model-block block-b"></div>
+            <div class="model-block block-c"></div>
+            <p class="blueprint-caption">LOD 400 · MEP Coordination</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="stats">
+      <div class="container stats-grid">
+        <div><strong>40+</strong><span>Projects delivered</span></div>
+        <div><strong>12</strong><span>Years in AEC</span></div>
+        <div><strong>Revit · Navisworks</strong><span>Primary tools</span></div>
+        <div><strong>IFC · COBie</strong><span>Standards expertise</span></div>
+      </div>
+    </section>
+
+    <section class="section" id="about">
+      <div class="container about-grid">
+        <div>
+          <p class="label">About</p>
+          <h2>Precision modeling with a construction-first mindset</h2>
+        </div>
+        <div class="about-copy">
+          <p>
+            Hi, I'm <strong>Chaithanya</strong> — a BIM designer focused on architectural and
+            multidisciplinary coordination. I work across residential towers, commercial campuses,
+            and healthcare facilities, ensuring models are accurate, federated, and ready for site teams.
+          </p>
+          <p>
+            My process blends design intent with buildability: structured families, clean parameters,
+            clash detection workflows, and documentation that reduces RFIs on site.
+          </p>
+          <ul class="skills">
+            <li>Architectural BIM modeling</li>
+            <li>MEP / structural coordination</li>
+            <li>4D sequencing support</li>
+            <li>As-built &amp; scan-to-BIM</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-muted" id="projects">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <p class="label">Portfolio</p>
+            <h2>Selected BIM projects</h2>
+          </div>
+          <div class="filters" role="tablist" aria-label="Project filters">
+            <button class="filter active" type="button" data-filter="all">All</button>
+            <button class="filter" type="button" data-filter="commercial">Commercial</button>
+            <button class="filter" type="button" data-filter="residential">Residential</button>
+            <button class="filter" type="button" data-filter="healthcare">Healthcare</button>
+          </div>
+        </div>
+
+        <div class="project-grid">
+          <article class="project-card" data-category="commercial">
+            <div class="project-visual visual-1">
+              <span class="project-tag">Commercial</span>
+            </div>
+            <div class="project-body">
+              <h3>Skyline Business Park</h3>
+              <p>120,000 sq.ft office campus — architectural LOD 350, federated MEP model, clash report reduction by 68%.</p>
+              <ul class="project-meta">
+                <li>Revit 2024</li>
+                <li>Navisworks</li>
+                <li>14 weeks</li>
+              </ul>
+            </div>
+          </article>
+
+          <article class="project-card" data-category="residential">
+            <div class="project-visual visual-2">
+              <span class="project-tag">Residential</span>
+            </div>
+            <div class="project-body">
+              <h3>Harbor Residences</h3>
+              <p>32-story mixed-use tower with modular unit layouts, parametric families, and coordinated core &amp; shell.</p>
+              <ul class="project-meta">
+                <li>Revit</li>
+                <li>Dynamo</li>
+                <li>20 weeks</li>
+              </ul>
+            </div>
+          </article>
+
+          <article class="project-card" data-category="healthcare">
+            <div class="project-visual visual-3">
+              <span class="project-tag">Healthcare</span>
+            </div>
+            <div class="project-body">
+              <h3>CityCare Medical Center</h3>
+              <p>Renovation BIM for operating theaters and ICU wings — scan-to-BIM alignment and equipment coordination.</p>
+              <ul class="project-meta">
+                <li>Revit</li>
+                <li>Recap</li>
+                <li>10 weeks</li>
+              </ul>
+            </div>
+          </article>
+
+          <article class="project-card" data-category="commercial">
+            <div class="project-visual visual-4">
+              <span class="project-tag">Commercial</span>
+            </div>
+            <div class="project-body">
+              <h3>Metro Retail Hub</h3>
+              <p>Phased retail development with tenant-fit-out templates and COBie-ready asset data for handover.</p>
+              <ul class="project-meta">
+                <li>Revit</li>
+                <li>IFC export</li>
+                <li>8 weeks</li>
+              </ul>
+            </div>
+          </article>
+
+          <article class="project-card" data-category="residential">
+            <div class="project-visual visual-5">
+              <span class="project-tag">Residential</span>
+            </div>
+            <div class="project-body">
+              <h3>Greenfield Villas</h3>
+              <p>Low-rise housing cluster — site grading integration, façade panels, and solar shading analysis support.</p>
+              <ul class="project-meta">
+                <li>Revit</li>
+                <li>Enscape</li>
+                <li>6 weeks</li>
+              </ul>
+            </div>
+          </article>
+
+          <article class="project-card" data-category="healthcare">
+            <div class="project-visual visual-6">
+              <span class="project-tag">Healthcare</span>
+            </div>
+            <div class="project-body">
+              <h3>Wellness Clinic Expansion</h3>
+              <p>Fast-track clinic addition with LOD 300 architectural model and MEP clash resolution in 3 coordination cycles.</p>
+              <ul class="project-meta">
+                <li>Revit</li>
+                <li>Navisworks</li>
+                <li>5 weeks</li>
+              </ul>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="services">
+      <div class="container">
+        <p class="label">Services</p>
+        <h2>What I can help you with</h2>
+        <div class="service-grid">
+          <article class="service-card">
+            <h3>BIM modeling</h3>
+            <p>Architectural models from sketches or PDFs, with structured views, sheets, and schedules.</p>
+          </article>
+          <article class="service-card">
+            <h3>Coordination</h3>
+            <p>Multidisciplinary clash detection, issue tracking, and coordination meetings support.</p>
+          </article>
+          <article class="service-card">
+            <h3>Documentation</h3>
+            <p>Construction-ready drawing sets, details, and revision-controlled deliverables.</p>
+          </article>
+          <article class="service-card">
+            <h3>Consultation</h3>
+            <p>BIM standards, template setup, team onboarding, and workflow optimization.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-booking" id="booking">
+      <div class="container booking-grid">
+        <div class="booking-info">
+          <p class="label">Booking</p>
+          <h2>Schedule a consultation</h2>
+          <p>
+            Share your project scope and preferred time. You'll receive a confirmation email
+            with meeting details within one business day.
+          </p>
+          <ul class="booking-notes">
+            <li>30-minute discovery call — free</li>
+            <li>60-minute technical review — project-based</li>
+            <li>Available Mon–Fri, 9:00 AM – 6:00 PM IST</li>
+          </ul>
+        </div>
+
+        <form class="booking-form" id="booking-form" novalidate>
+          <div class="field-row">
+            <div class="field">
+              <label for="name">Full name</label>
+              <input id="name" name="name" type="text" required autocomplete="name" placeholder="Your name" />
+            </div>
+            <div class="field">
+              <label for="email">Email</label>
+              <input id="email" name="email" type="email" required autocomplete="email" placeholder="you@company.com" />
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="phone">Phone</label>
+              <input id="phone" name="phone" type="tel" autocomplete="tel" placeholder="+91 98765 43210" />
+            </div>
+            <div class="field">
+              <label for="company">Company / Firm</label>
+              <input id="company" name="company" type="text" placeholder="Optional" />
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="service">Service</label>
+              <select id="service" name="service" required>
+                <option value="">Select a service</option>
+                <option value="discovery">Free discovery call (30 min)</option>
+                <option value="modeling">BIM modeling</option>
+                <option value="coordination">Coordination &amp; clash detection</option>
+                <option value="documentation">Documentation package</option>
+                <option value="consultation">BIM consultation</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="date">Preferred date</label>
+              <input id="date" name="date" type="date" required />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="time">Preferred time</label>
+            <div class="time-slots" id="time-slots">
+              <label class="slot"><input type="radio" name="time" value="09:00" required /><span>9:00 AM</span></label>
+              <label class="slot"><input type="radio" name="time" value="11:00" /><span>11:00 AM</span></label>
+              <label class="slot"><input type="radio" name="time" value="14:00" /><span>2:00 PM</span></label>
+              <label class="slot"><input type="radio" name="time" value="16:00" /><span>4:00 PM</span></label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="message">Project details</label>
+            <textarea id="message" name="message" rows="4" placeholder="Briefly describe your project, timeline, and deliverables needed."></textarea>
+          </div>
+
+          <button class="btn btn-full" type="submit">Request booking</button>
+          <p class="form-hint">Static demo: submissions are saved locally. Connect Formspree or Calendly for live bookings.</p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div>
+        <a class="brand" href="#top">Chaithanya<span>.</span></a>
+        <p>BIM Designer · Architectural &amp; multidisciplinary coordination</p>
+      </div>
+      <div class="footer-links">
+        <a href="mailto:chaithanya@example.com">chaithanya@example.com</a>
+        <a href="https://www.linkedin.com" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+      </div>
+    </div>
+    <p class="copyright container">© 2026 Chaithanya. All rights reserved.</p>
+  </footer>
+
+  <dialog class="modal" id="success-modal">
+    <div class="modal-content">
+      <p class="label">Booking received</p>
+      <h3>Thank you!</h3>
+      <p id="modal-message">Your consultation request has been recorded.</p>
+      <button class="btn" type="button" id="close-modal">Close</button>
+    </div>
+  </dialog>
+
+  <script src="script.js"></script>
+</body>
+</html>

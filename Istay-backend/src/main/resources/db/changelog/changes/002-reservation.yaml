@@ -1,0 +1,94 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-reservation
+      author: istay
+      changes:
+        - createTable:
+            tableName: reservation
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: property_id
+                  type: varchar(64)
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_reservation_property
+                    references: property(property_id)
+              - column:
+                  name: room_type_id
+                  type: varchar(64)
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_reservation_room_type
+                    references: room_type(room_type_id)
+              - column:
+                  name: check_in
+                  type: date
+                  constraints:
+                    nullable: false
+              - column:
+                  name: check_out
+                  type: date
+                  constraints:
+                    nullable: false
+              - column:
+                  name: guest_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: guest_email
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar(32)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: rooms
+                  type: int
+                  defaultValueNumeric: 1
+                  constraints:
+                    nullable: false
+              - column:
+                  name: nightly_rate
+                  type: numeric(12,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: total_rate
+                  type: numeric(12,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: idempotency_key
+                  type: varchar(128)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  constraints:
+                    nullable: false
+        - createIndex:
+            tableName: reservation
+            indexName: idx_reservation_availability
+            columns:
+              - column:
+                  name: property_id
+              - column:
+                  name: room_type_id
+              - column:
+                  name: status
+              - column:
+                  name: check_in
+              - column:
+                  name: check_out

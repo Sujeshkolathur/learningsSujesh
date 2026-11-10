@@ -1,0 +1,57 @@
+.auth-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 12rem);
+  padding: 2rem 1rem;
+}
+
+.auth-card {
+  width: min(100%, 400px);
+}
+
+.auth-card h1 {
+  margin: 0 0 1.25rem;
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+}
+
+.auth-card label {
+  display: block;
+  margin-bottom: 0.85rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.auth-card label .input {
+  margin-top: 0.35rem;
+}
+
+.auth-links {
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+
+.error {
+  color: #b91c1c;
+  font-size: 0.9rem;
+  margin-bottom: 0.75rem;
+}
+
+.success {
+  color: #16a34a;
+  font-size: 0.9rem;
+}
+
+.hint {
+  color: var(--ink-muted);
+  font-size: 0.88rem;
+  margin-bottom: 1rem;
+}
+
+.admin-form .form-actions {
+  display: flex;
+  gap: 0.65rem;
+  margin-top: 0.5rem;
+}

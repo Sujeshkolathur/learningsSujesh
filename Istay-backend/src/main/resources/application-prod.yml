@@ -1,0 +1,31 @@
+# Production profile — secrets MUST come from the environment.
+spring:
+  datasource:
+    url: ${ISTAY_DB_URL}
+    username: ${ISTAY_DB_USERNAME}
+    password: ${ISTAY_DB_PASSWORD}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
+istay:
+  cors:
+    allowed-origins: ${ISTAY_CORS_ALLOWED_ORIGINS}
+  security:
+    actuator-open: false
+    open-api-enabled: false
+    jwt:
+      secret: ${ISTAY_JWT_SECRET}
+      expiration-minutes: ${ISTAY_JWT_EXPIRATION_MINUTES:60}

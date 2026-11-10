@@ -1,0 +1,56 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-property-room-type
+      author: istay
+      changes:
+        - createTable:
+            tableName: property
+            columns:
+              - column:
+                  name: property_id
+                  type: varchar(64)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+        - createTable:
+            tableName: room_type
+            columns:
+              - column:
+                  name: room_type_id
+                  type: varchar(64)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: property_id
+                  type: varchar(64)
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_room_type_property
+                    references: property(property_id)
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: total_rooms
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: nightly_rate
+                  type: numeric(12,2)
+                  constraints:
+                    nullable: false
+        - createIndex:
+            tableName: room_type
+            indexName: idx_room_type_property
+            columns:
+              - column:
+                  name: property_id

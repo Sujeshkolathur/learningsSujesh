@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004-reservation-list-index
+      author: istay
+      changes:
+        - createIndex:
+            tableName: reservation
+            indexName: idx_reservation_property_created
+            columns:
+              - column:
+                  name: property_id
+              - column:
+                  name: created_at
+                  descending: true
