@@ -1,0 +1,13 @@
+package interview.coding1;
+
+import java.util.HashSet;
+import java.util.Set;
+
+public class FindAllPairsForTheTarget {
+
+	public static void main(String[] args) {
+		int[] arr = {1,2,3,4,5,12,34,5,66};
+		Set<String> seen = new HashSet<>();
+	}
+
+}

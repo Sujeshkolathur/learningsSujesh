@@ -1,0 +1,14 @@
+package sample;
+
+import java.util.List;
+
+public class HelloWorld {
+
+	public static void main(String[] args) {
+		List<String> list = List.of("a", "b", "c");
+
+		String combinedString = list.stream().reduce("", (a, b) -> a + b);
+
+	}
+
+}

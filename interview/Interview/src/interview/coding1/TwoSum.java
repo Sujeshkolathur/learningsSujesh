@@ -1,0 +1,26 @@
+package interview.coding1;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class TwoSum {
+
+	public static void main(String[] args) {
+		int[] input =  {2, 7, 11, 15};
+		int target  = 9;
+
+		
+		Map<Integer, Integer> map = new HashMap<>();
+		
+		for (int i = 0; i < input.length; i++) {
+			int secondNumber = target-input[i];
+			if(map.containsKey(secondNumber)) {
+				System.out.println(i+", "+map.get(secondNumber));
+				break;
+			}
+			map.put(input[i], i);
+		}
+		
+	}
+
+}

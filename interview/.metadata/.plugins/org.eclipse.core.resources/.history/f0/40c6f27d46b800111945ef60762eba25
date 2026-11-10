@@ -1,0 +1,38 @@
+package interview.coding1;
+
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
+public class RemoveDuplicatesFromSortedArray {
+
+	public static void main(String[] args) {
+		int[] arr = new int[] {1,2,2,3,3,6,6};
+		int[] arrIdentical =  removeDuplicates(arr);
+		for (int i : arrIdentical) {
+			System.out.println(i);
+		}
+	}
+
+	private static int[] removeDuplicates(int[] arr) {
+		Set<Integer> identical = new LinkedHashSet<>();
+		for (int i = 0; i < arr.length; i++) {
+			identical.add(arr[i]);
+		}
+		int[] arrIdentical =  new int[identical.size()];
+		int index=0;
+		for (int i : identical) {
+			arrIdentical[index] = i;
+			index++;
+		}
+		return arrIdentical;
+	}
+
+	private static int[] removeDuplicatesAdvanced(int[] arr) {
+		Set<Integer> identical = new LinkedHashSet<>();
+		for (int i = 0; i < arr.length; i++) {
+
+		}
+	}
+
+}

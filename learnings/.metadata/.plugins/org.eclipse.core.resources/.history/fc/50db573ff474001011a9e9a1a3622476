@@ -1,0 +1,40 @@
+package designpatter.behavioural.state;
+
+public class FanContext {
+	
+	public interface FanState {
+		void showState();
+		void nextState(FanContext context);
+	}
+	public class OffState implements FanState{
+
+		@Override
+		public void showState() {
+			System.out.println("Fan is OFF");
+			
+		}
+
+		@Override
+		public void nextState(FanContext fan) {
+			fan.setState(new MediumState());
+			
+		}
+		
+	}
+	public class MediumState implements FanState{
+
+		@Override
+		public void showState() {
+			System.out.println("Fan is in MEDIUM state");
+			
+		}
+
+		@Override
+		public void nextState(FanContext fan) {
+			fan.setState(new HighState());
+			
+		}
+		
+	}
+
+}

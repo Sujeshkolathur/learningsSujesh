@@ -1,0 +1,23 @@
+package interview.coding1;
+
+import java.util.Arrays;
+import java.util.List;
+
+public class ThreeSum {
+
+	public static void main(String[] args) {
+		Integer[] nums= new Integer[] {1,2,3,4,7,2,5};
+		
+		Arrays.sort(nums);
+		List<Integer> asList = Arrays.asList(nums);
+		System.out.println(asList);
+		
+		String[] arr = {"Java", "Spring", "AWS"};
+
+		List<String> list = Arrays.asList(arr);
+
+		System.out.println(list);
+	}
+
+}
+

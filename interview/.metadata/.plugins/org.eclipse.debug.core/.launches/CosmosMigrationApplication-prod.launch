@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
+    <booleanAttribute key="org.eclipse.debug.core.ATTR_FORCE_SYSTEM_CONSOLE_ENCODING" value="false"/>
+    <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+        <listEntry value="/CosmosMigration/src/main/java/com/tj/pp/CosmosMigrationApplication.java"/>
+    </listAttribute>
+    <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+        <listEntry value="1"/>
+    </listAttribute>
+    <mapAttribute key="org.eclipse.debug.core.environmentVariables">
+        <mapEntry key="AZURE_CLIENT_ID" value="567267d4-ef6e-4bfa-a3bd-4504abc66152"/>
+        <mapEntry key="AZURE_CLIENT_SECRET" value=".2T8Q~G9wSKNoZGcek7akR-gexc-MNMfM0TgXb_0"/>
+        <mapEntry key="AZURE_TENANT_ID" value="03f91085-f12d-411a-b8f5-a23298608e48"/>
+        <mapEntry key="COSMOS_CONTAINER_FILTER" value="glossaryNodes"/>
+        <mapEntry key="COSMOS_ENV" value="prod"/>
+        <mapEntry key="COSMOS_SOURCE_CLIENT_ID" value="567267d4-ef6e-4bfa-a3bd-4504abc66152"/>
+        <mapEntry key="COSMOS_SOURCE_CLIENT_SECRET" value=".2T8Q~G9wSKNoZGcek7akR-gexc-MNMfM0TgXb_0"/>
+        <mapEntry key="COSMOS_SOURCE_DATABASE" value="GlossaryDB"/>
+        <mapEntry key="COSMOS_SOURCE_TENANT_ID" value="03f91085-f12d-411a-b8f5-a23298608e48"/>
+        <mapEntry key="COSMOS_SOURCE_URI" value="https://cosmos-nosql-pdp-dev-westus3-t10w.documents.azure.com:443/"/>
+        <mapEntry key="COSMOS_TARGET_CLIENT_ID" value="baa5f879-72e2-4fc7-8521-c3a8d2523c67"/>
+        <mapEntry key="COSMOS_TARGET_CLIENT_SECRET" value="EDd8Q~wWQk5UQrFSMvm0.p3~6yf3Qo2hwZpZebob"/>
+        <mapEntry key="COSMOS_TARGET_DATABASE" value="GlossaryDBtest"/>
+        <mapEntry key="COSMOS_TARGET_TENANT_ID" value="03f91085-f12d-411a-b8f5-a23298608e48"/>
+        <mapEntry key="COSMOS_TARGET_URI" value="https://cosmos-nosql-pdp-prod-westus3-v84u.documents.azure.com:443/"/>
+    </mapAttribute>
+    <booleanAttribute key="org.eclipse.jdt.launching.ATTR_ATTR_USE_ARGFILE" value="false"/>
+    <booleanAttribute key="org.eclipse.jdt.launching.ATTR_SHOW_CODEDETAILS_IN_EXCEPTION_MESSAGES" value="true"/>
+    <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_CLASSPATH_ONLY_JAR" value="false"/>
+    <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
+    <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="com.tj.pp.CosmosMigrationApplication"/>
+    <stringAttribute key="org.eclipse.jdt.launching.MODULE_NAME" value="CosmosMigration"/>
+    <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="CosmosMigration"/>
+</launchConfiguration>

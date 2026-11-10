@@ -1,0 +1,24 @@
+package DSA;
+
+public class BSTDSDemo {
+
+	public static void main(String[] args) {
+		BSTDS root= new BSTDS(23);
+		BSTDS leftNode= new BSTDS(10);
+		BSTDS rightNode= new BSTDS(100);
+		root.leftchild=leftNode;
+		root.rightChild=rightNode;
+		
+		root.insert(root, 1000);
+		root.insert(root, 88)
+;
+		root.inOrderTraversal(root);
+		root.postOrderTraversal(root);
+		root.preOrderTraversal(root);
+
+		System.out.println("Search for 100 results "+root.search(root, 100));
+		System.out.println("Search for 999 results "+root.search(root, 999));
+
+	}
+
+}

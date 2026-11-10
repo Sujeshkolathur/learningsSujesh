@@ -1,0 +1,21 @@
+package sample;
+
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+public class HelloWorld {
+
+	public static void main(String[] args) {
+		List<String> list = List.of("a", "b", "c", "a", "b", "c", "a", "b", "c");
+
+		Map<String, Long> countMap =
+				list.stream()
+				.collect(Collectors.groupingBy(
+				        Function.identity(),
+				        Collectors.counting()));
+		countMap.entrySet().forEach(System.out::println);
+	}
+
+}

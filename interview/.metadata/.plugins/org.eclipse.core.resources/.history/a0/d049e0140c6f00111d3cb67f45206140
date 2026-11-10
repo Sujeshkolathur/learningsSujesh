@@ -1,0 +1,16 @@
+package interview;
+
+import java.util.HashSet;
+import java.util.Set;
+
+public class HashCodeEqualsContract {
+
+	public static void main(String[] args) {
+		Set<Person> persons = new HashSet<>();
+	}
+
+}
+
+class Person{
+	String name;
+}

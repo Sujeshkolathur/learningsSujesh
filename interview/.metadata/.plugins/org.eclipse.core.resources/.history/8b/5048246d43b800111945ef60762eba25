@@ -1,0 +1,65 @@
+package interview.coding1;
+
+public class SecondLargestElement {
+
+	public static void main(String[] args) {
+		int[] arr = new int[] {1,2,4,5,7,9,0,3};
+		System.out.println(secondLargest(arr));
+		System.out.println(secondSmallest(arr));
+		System.out.println(thirdSmallest(arr));
+
+	}
+	
+	public static Integer secondLargest(int[] arr) {
+		int largest = Integer.MIN_VALUE;
+		int secondLargest = Integer.MIN_VALUE;
+		for (int i = 0; i < arr.length; i++) {
+			if(arr[i]>largest) {
+				secondLargest=largest;
+				largest=arr[i];
+			}else{
+				secondLargest = Math.max(secondLargest, arr[i]);
+			}
+			
+		}
+		
+		return secondLargest;
+	}
+	public static Integer secondSmallest(int[] arr) {
+		int smallest = Integer.MAX_VALUE;
+		int secondSmallest = Integer.MAX_VALUE;
+		for (int i = 0; i < arr.length; i++) {
+			if(arr[i]<smallest) {
+				secondSmallest =smallest;
+				smallest=arr[i];
+			}else{
+				secondSmallest = Math.max(secondSmallest, arr[i]);
+			}
+			
+		}
+		
+		return secondSmallest;
+	}
+	public static Integer thirdSmallest(int[] arr) {
+		int smallest = Integer.MAX_VALUE;
+		int secondSmallest = Integer.MAX_VALUE;
+		int thirdSmallest = Integer.MAX_VALUE;
+		
+		for (int i = 0; i < arr.length; i++) {
+			if(arr[i]<smallest) {
+				thirdSmallest=secondSmallest;
+				secondSmallest =smallest;
+				smallest=arr[i];
+			}else if(arr[i]<=secondSmallest && arr[i] >smallest){
+				thirdSmallest=secondSmallest;
+				secondSmallest = arr[i];
+			}else {
+				thirdSmallest=Math.min(thirdSmallest, arr[i]);
+			}
+			
+		}
+		
+		return thirdSmallest;
+	}
+
+}

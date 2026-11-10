@@ -1,0 +1,43 @@
+package basic;
+
+public class StockEstimation {
+
+	public static void main(String[] args) {
+		int[] prices = new int[] { 1, 5, 0, 5, 7, 9 };
+		int[] bestPricestoBuy= find(prices);
+
+	}
+
+	private static int[] find(int[] prices) {
+		if(prices.length==2) {
+			if(prices[0]<prices[1]) {
+				return prices;
+				
+			}
+			return null;
+		}else if(prices.length>2) {
+			int minimumSofar=prices[0];
+			int priceToBuy = prices[0];
+			int pricetoSell = -1;
+			int profitSofar= 0;
+			
+
+			for (int i = 1; i < prices.length; i++) {
+				
+					minimumSofar=Math.min(minimumSofar, prices[i]);
+					
+				}
+				if(profitSofar<prices[i]-minimumSofar) {
+					profitSofar=prices[i]-minimumSofar;
+					priceToBuy=minimumSofar;
+					pricetoSell=prices[i];
+				}
+				
+			}
+			return new int[] {priceToBuy,pricetoSell};
+		}
+		return prices;
+		
+	}
+
+}

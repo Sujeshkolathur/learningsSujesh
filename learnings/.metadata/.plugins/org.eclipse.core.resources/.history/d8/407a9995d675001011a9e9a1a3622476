@@ -1,0 +1,58 @@
+package DSA;
+
+public class InsertionSort {
+
+	public static void main(String[] args) {
+
+		int[] nums = new int[] { 199, 101, 8, 2, 1, 6, 8, 9, 100, 2000 };
+		insertionSort2(nums);
+		for (int i : nums) {
+			System.out.println(i);
+		}
+	}
+
+	private static void insertionSort(int[] nums) {
+		
+		for (int i = 1; i <= nums.length-1; i++) {
+			for (int j = 0; j < i; j++) {
+				if(nums[i]<nums[j]) {
+					int temp=nums[i];
+					for (int j2 = i; j2 >j; j2--) {
+						nums[j2]=nums[j2-1];
+						
+					}
+					nums[j]=temp;
+					break;
+				}
+				
+			}
+			
+
+		}
+		
+	}
+
+private static void insertionSort2(int[] nums) {
+		
+		for (int i = 1; i <= nums.length-1; i++) {
+			int key = nums[i];
+			int j=i-1;
+			while(key<nums[j]) {
+				nums[j+1]=nums[j];
+				j--;
+			}
+			nums[j]=key;
+			
+			
+
+		}
+		
+	}
+
+	private static void swap(int[] nums, int i, int j) {
+		int temp = nums[i];
+		nums[i] = nums[j];
+		nums[j] = temp;
+
+	}
+}

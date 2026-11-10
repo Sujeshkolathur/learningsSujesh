@@ -1,0 +1,23 @@
+package interview.coding1;
+
+public class MoveNegativeTOOneSide {
+
+	public static void main(String[] args) {
+		int[] arr = new int[] {-2,2,4,6,-2};
+		arr= move(arr);
+	}
+
+	private static int[] move(int[] arr) {
+		 int index = 0;
+		 for (int i = 0; i < arr.length; i++) {
+			if(arr[i]<0) {
+				int temp = arr[index];
+				arr[index] = arr[i];
+				arr[i] = temp;
+			}
+			
+		}
+		 return arr;
+	}
+
+}

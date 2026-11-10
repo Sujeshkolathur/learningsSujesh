@@ -1,0 +1,28 @@
+package sample;
+
+
+public class HelloWorld {
+
+	public static void main(String[] args) {
+		
+		String s = null;
+
+		System.out.println(s + " Java");
+
+	}
+
+}
+class Singleton{
+	private static Singleton instance=null;
+	
+	private Singleton() {
+	}
+	
+	public Singleton getInstance() {
+		if(instance==null) {
+			this.instance=new Singleton();
+		}
+		return instance;
+	}
+	
+}

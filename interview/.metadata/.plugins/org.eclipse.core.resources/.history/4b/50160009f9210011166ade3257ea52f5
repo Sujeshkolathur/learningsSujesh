@@ -1,0 +1,722 @@
+package com.tj.pp;
+
+import java.time.Duration;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.azure.cosmos.ConsistencyLevel;
+import com.azure.cosmos.CosmosClient;
+import com.azure.cosmos.CosmosClientBuilder;
+import com.azure.cosmos.CosmosContainer;
+import com.azure.cosmos.CosmosDatabase;
+import com.azure.cosmos.CosmosException;
+import com.azure.cosmos.models.CosmosContainerProperties;
+import com.azure.cosmos.models.CosmosItemRequestOptions;
+import com.azure.cosmos.models.CosmosQueryRequestOptions;
+import com.azure.cosmos.models.PartitionKey;
+import com.azure.cosmos.models.ThroughputProperties;
+import com.azure.cosmos.util.CosmosPagedIterable;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+public class CosmosMigrationApplication {
+
+    private static final Logger logger = LoggerFactory.getLogger(CosmosMigrationApplication.class);
+
+    // WARNING: Hardcoded connection strings - FOR DEVELOPMENT/TESTING ONLY
+    // TODO: Move to environment variables or secure configuration for production use
+    private static final String DEV_URI = "https://cosmos-nosql-pdp-dev-westus3-t10w.documents.azure.com:443/";
+    private static final String DEV_KEY = "78AKM6cBiHypsYfR8TYyfwBruuVOzRB51zU3hy6ZVAatDHifLTZ2EkWgMbj9bCcqC1wttY6qz8uhACDb4KnRcA==";
+    private static final String DEV_DB = "GlossaryDB";
+
+    private static final String QA_URI = "https://cosmos-nosql-pdp-qa-westus3-nzim.documents.azure.com:443/";
+    private static final String QA_KEY = "SGAnsAiQCBWLV06iTkXJ961BAvjsizBnJOC6Ty5ZKq8TvLVEU4xXMHxozVjv4VxRdiiB2q1qBAEpACDbciAyfg==";
+    private static final String QA_DB = "GlossaryDB";
+
+//    private static final String QA_URI = "https://cosmos-nosql-pdp-staging-westus3-vwjk.documents.azure.com:443/";
+//    private static final String QA_KEY = "DlbbjyoHPvNheHxDWRlB6nC0RhzmaZJZ7V5gvPR3U4Nb1Cquw3DDvmCEQQ3mDt58A7QGtm5hAb9sACDbMDFThw==";
+//    private static final String QA_DB = "GlossaryDB";
+    
+    private static final int THREADS_CONTAINERS = Integer.parseInt(getenvOrDefault("THREAD_POOL_CONTAINERS", "6"));
+    private static final int THREADS_ITEMS = Integer.parseInt(getenvOrDefault("THREAD_POOL_ITEMS", "32"));
+    private static final boolean CLEAR_QA_FIRST = Boolean.parseBoolean(getenvOrDefault("CLEAR_QA_FIRST", "false"));
+    private static final int PAGE_SIZE = Integer.parseInt(getenvOrDefault("PAGE_SIZE", "100"));
+    private static final int MAX_RETRIES = Integer.parseInt(getenvOrDefault("MAX_RETRIES", "3"));
+    private static final long RETRY_DELAY_MS = Long.parseLong(getenvOrDefault("RETRY_DELAY_MS", "1000"));
+    private static final int FUTURE_BATCH_SIZE = Integer.parseInt(getenvOrDefault("FUTURE_BATCH_SIZE", "1000"));
+    private static final long EXECUTOR_SHUTDOWN_TIMEOUT_SECONDS = Long.parseLong(getenvOrDefault("EXECUTOR_SHUTDOWN_TIMEOUT_SECONDS", "300"));
+    
+    // Container filter: comma-separated list of container names to copy
+    // If empty or not set, all containers will be copied
+    // Example: "glossaryData,glossaryNodes,glossaryComments"
+    private static final Set<String> CONTAINER_FILTER = parseContainerFilter("glossaryNodes");
+
+    private static CosmosClient devClient;
+    private static CosmosClient qaClient;
+
+    public static void main(String[] args) {
+        Instant startTime = Instant.now();
+        logger.info("==========================================");
+        logger.info("Starting Cosmos DB Migration Tool");
+        logger.info("==========================================");
+        
+        validateEnv();
+
+        logger.info("Configuration: DEV_DB={} -> QA_DB={}", DEV_DB, QA_DB);
+        logger.info("Thread pools: containers={}, items={}", THREADS_CONTAINERS, THREADS_ITEMS);
+        logger.info("Settings: clearQA={}, pageSize={}, maxRetries={}, retryDelayMs={}", 
+                CLEAR_QA_FIRST, PAGE_SIZE, MAX_RETRIES, RETRY_DELAY_MS);
+        logger.info("Future batch size: {}, executor shutdown timeout: {}s", FUTURE_BATCH_SIZE, EXECUTOR_SHUTDOWN_TIMEOUT_SECONDS);
+        if (CONTAINER_FILTER.isEmpty()) {
+            logger.info("Container filter: NONE (will copy all containers)");
+        } else {
+            logger.info("Container filter: {} (will copy only these containers)", CONTAINER_FILTER);
+        }
+
+        logger.info("Initializing Cosmos DB clients...");
+        logger.info("Attempting to connect to DEV endpoint: {}", DEV_URI);
+        try {
+            devClient = new CosmosClientBuilder()
+                    .endpoint(DEV_URI)
+                    .key(DEV_KEY)
+                    .consistencyLevel(ConsistencyLevel.EVENTUAL)
+                    .contentResponseOnWriteEnabled(false)
+                    .buildClient();
+            
+            logger.info("DEV client created, testing connection...");
+            // Test connection by reading database with timeout
+            CosmosDatabase testDb = devClient.getDatabase(DEV_DB);
+            testDb.read();
+            logger.info("DEV client initialized and connection verified successfully");
+        } catch (Exception e) {
+            logger.error("==========================================");
+            logger.error("CONNECTION FAILED - DEV Database");
+            logger.error("==========================================");
+            logger.error("Error: {}", e.getMessage());
+            logger.error("");
+            logger.error("The Cosmos DB endpoint resolves to a PRIVATE IP address (10.232.64.198)");
+            logger.error("This indicates the account uses Private Endpoint or VNet integration.");
+            logger.error("");
+            logger.error("SOLUTIONS:");
+            logger.error("1. Connect to VPN: Ensure you're connected to the corporate VPN");
+            logger.error("2. Run from Azure VM: Execute migration from a VM in the same VNet");
+            logger.error("3. Use Azure Bastion: Access via Azure Bastion service");
+            logger.error("4. Check Network Settings: Verify Cosmos DB networking configuration");
+            logger.error("");
+            logger.error("Endpoint: {}", DEV_URI);
+            logger.error("Database: {}", DEV_DB);
+            if (e.getCause() != null) {
+                logger.error("Root cause: {}", e.getCause().getMessage());
+            }
+            System.exit(1);
+        }
+
+        logger.info("Attempting to connect to QA endpoint: {}", QA_URI);
+        try {
+            qaClient = new CosmosClientBuilder()
+                    .endpoint(QA_URI)
+                    .key(QA_KEY)
+                    .consistencyLevel(ConsistencyLevel.EVENTUAL)
+                    .contentResponseOnWriteEnabled(false)
+                    .buildClient();
+            
+            logger.info("QA client created, testing connection...");
+            // Test connection by reading database
+            CosmosDatabase testDb = qaClient.getDatabase(QA_DB);
+            testDb.read();
+            logger.info("QA client initialized and connection verified successfully");
+        } catch (Exception e) {
+            logger.error("==========================================");
+            logger.error("CONNECTION FAILED - QA Database");
+            logger.error("==========================================");
+            logger.error("Error: {}", e.getMessage());
+            logger.error("");
+            logger.error("The Cosmos DB endpoint resolves to a PRIVATE IP address (10.232.64.198)");
+            logger.error("This indicates the account uses Private Endpoint or VNet integration.");
+            logger.error("");
+            logger.error("SOLUTIONS:");
+            logger.error("1. Connect to VPN: Ensure you're connected to the corporate VPN");
+            logger.error("2. Run from Azure VM: Execute migration from a VM in the same VNet");
+            logger.error("3. Use Azure Bastion: Access via Azure Bastion service");
+            logger.error("4. Check Network Settings: Verify Cosmos DB networking configuration");
+            logger.error("");
+            logger.error("Endpoint: {}", QA_URI);
+            logger.error("Database: {}", QA_DB);
+            if (e.getCause() != null) {
+                logger.error("Root cause: {}", e.getCause().getMessage());
+            }
+            if (devClient != null) {
+                devClient.close();
+            }
+            System.exit(1);
+        }
+
+        CosmosDatabase devDatabase = devClient.getDatabase(DEV_DB);
+        CosmosDatabase qaDatabase = qaClient.getDatabase(QA_DB);
+        logger.info("Connected to databases: DEV={}, QA={}", DEV_DB, QA_DB);
+
+        // List containers in Dev DB
+        logger.info("Discovering containers in DEV database...");
+        CosmosPagedIterable<CosmosContainerProperties> containerPropsList =
+                devDatabase.readAllContainers();
+
+        List<CosmosContainerProperties> allContainers = new ArrayList<>();
+        containerPropsList.forEach(allContainers::add);
+
+        logger.info("Found {} containers in DEV database", allContainers.size());
+        
+        // Filter containers based on CONTAINER_FILTER
+        List<CosmosContainerProperties> containers;
+        if (CONTAINER_FILTER.isEmpty()) {
+            logger.info("No container filter specified - copying all {} containers", allContainers.size());
+            containers = allContainers;
+        } else {
+            logger.info("Container filter active - only copying containers: {}", CONTAINER_FILTER);
+            containers = allContainers.stream()
+                    .filter(cp -> CONTAINER_FILTER.contains(cp.getId()))
+                    .collect(Collectors.toList());
+            
+            if (containers.isEmpty()) {
+                logger.error("No containers matched the filter! Available containers: {}", 
+                        allContainers.stream().map(CosmosContainerProperties::getId).collect(Collectors.toList()));
+                logger.error("Filter specified: {}", CONTAINER_FILTER);
+                System.exit(1);
+            }
+            
+            // Check for containers in filter that don't exist
+            Set<String> foundContainerNames = containers.stream()
+                    .map(CosmosContainerProperties::getId)
+                    .collect(Collectors.toSet());
+            Set<String> missingContainers = new HashSet<>(CONTAINER_FILTER);
+            missingContainers.removeAll(foundContainerNames);
+            if (!missingContainers.isEmpty()) {
+                logger.warn("Warning: Some containers in filter were not found in DEV database: {}", missingContainers);
+            }
+        }
+        
+        logger.info("Will copy {} container(s): {}", containers.size(), 
+                containers.stream().map(CosmosContainerProperties::getId).collect(Collectors.toList()));
+        if (logger.isDebugEnabled()) {
+            containers.forEach(c -> logger.debug("Container: {} (pk: {})", c.getId(), 
+                    c.getPartitionKeyDefinition().getPaths()));
+        }
+
+        // Executor for container-level parallelism
+        ExecutorService containerExecutor = Executors.newFixedThreadPool(THREADS_CONTAINERS);
+        logger.info("Container executor service started with {} threads", THREADS_CONTAINERS);
+
+        // Shared stats
+        AtomicLong totalRead = new AtomicLong(0);
+        AtomicLong totalWritten = new AtomicLong(0);
+        AtomicLong totalFailed = new AtomicLong(0);
+        CountDownLatch latch = new CountDownLatch(containers.size());
+
+        logger.info("Submitting {} container copy tasks...", containers.size());
+        for (CosmosContainerProperties cp : containers) {
+            final String containerName = cp.getId();
+            containerExecutor.submit(() -> {
+                Instant containerStartTime = Instant.now();
+                logger.info("[{}] Starting container copy process", containerName);
+                try {
+                    copySingleContainer(devDatabase, qaDatabase, cp, totalRead, totalWritten, totalFailed);
+                    long containerDuration = Duration.between(containerStartTime, Instant.now()).getSeconds();
+                    logger.info("[{}] Container copy completed successfully in {} seconds", containerName, containerDuration);
+                } catch (Exception e) {
+                    long containerDuration = Duration.between(containerStartTime, Instant.now()).getSeconds();
+                    logger.error("[{}] Error copying container after {} seconds: {}", 
+                            containerName, containerDuration, e.getMessage(), e);
+                } finally {
+                    latch.countDown();
+                    logger.debug("[{}] Container task completed, remaining: {}", containerName, latch.getCount());
+                }
+            });
+        }
+
+        logger.info("Waiting for all {} containers to complete...", containers.size());
+        try {
+            latch.await(); // wait for all containers to finish
+            logger.info("All container tasks completed");
+        } catch (InterruptedException e) {
+            logger.error("Interrupted while waiting for containers to complete", e);
+            Thread.currentThread().interrupt();
+        } finally {
+            logger.info("Shutting down container executor...");
+            containerExecutor.shutdown();
+            try {
+                if (!containerExecutor.awaitTermination(EXECUTOR_SHUTDOWN_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
+                    logger.warn("Container executor did not terminate within {} seconds, forcing shutdown", 
+                            EXECUTOR_SHUTDOWN_TIMEOUT_SECONDS);
+                    containerExecutor.shutdownNow();
+                }
+            } catch (InterruptedException e) {
+                logger.error("Interrupted while shutting down container executor", e);
+                containerExecutor.shutdownNow();
+                Thread.currentThread().interrupt();
+            }
+            
+            logger.info("Closing Cosmos DB clients...");
+            devClient.close();
+            qaClient.close();
+            logger.info("Clients closed");
+        }
+
+        long totalDuration = Duration.between(startTime, Instant.now()).getSeconds();
+        logger.info("==========================================");
+        logger.info("Migration Summary");
+        logger.info("==========================================");
+        logger.info("Total duration: {} seconds ({} minutes)", totalDuration, totalDuration / 60);
+        logger.info("Containers processed: {}", containers.size());
+        logger.info("Total items read: {}", totalRead.get());
+        logger.info("Total items written: {}", totalWritten.get());
+        logger.info("Total items failed: {}", totalFailed.get());
+        if (totalRead.get() > 0) {
+            double successRate = (double) totalWritten.get() / totalRead.get() * 100;
+            logger.info("Success rate: {:.2f}%", successRate);
+        }
+        logger.info("==========================================");
+    }
+
+    private static void copySingleContainer(CosmosDatabase devDb,
+                                            CosmosDatabase qaDb,
+                                            CosmosContainerProperties containerProps,
+                                            AtomicLong totalRead,
+                                            AtomicLong totalWritten,
+                                            AtomicLong totalFailed) {
+
+        String containerName = containerProps.getId();
+        List<String> pkPaths = containerProps.getPartitionKeyDefinition().getPaths();
+        String pkPath = pkPaths.isEmpty() ? "/id" : pkPaths.get(0); // default to /id if unknown
+
+        logger.info("[{}] Starting copy. partitionKey={}", containerName, pkPath);
+
+        // Ensure container exists in QA; create with same pk path if missing
+        CosmosContainer qaContainer = ensureContainerExists(qaDb, containerName, pkPath, containerProps);
+
+        // Optionally clear QA container first
+        if (CLEAR_QA_FIRST) {
+            logger.info("[{}] Clearing QA container first...", containerName);
+            Instant clearStart = Instant.now();
+            deleteAllItemsInContainer(qaContainer, pkPath);
+            long clearDuration = Duration.between(clearStart, Instant.now()).getSeconds();
+            logger.info("[{}] QA container cleared in {} seconds", containerName, clearDuration);
+        }
+
+        CosmosContainer devContainer = devDb.getContainer(containerName);
+        logger.debug("[{}] Connected to DEV container", containerName);
+
+        // Item-level executor (bounded)
+        ExecutorService itemsExecutor = Executors.newFixedThreadPool(THREADS_ITEMS);
+        logger.debug("[{}] Item executor service started with {} threads", containerName, THREADS_ITEMS);
+
+        // Query pages from dev container
+        CosmosQueryRequestOptions queryOptions = new CosmosQueryRequestOptions();
+        queryOptions.setMaxBufferedItemCount(PAGE_SIZE);
+        String query = "SELECT * FROM c";
+
+        logger.info("[{}] Starting to query items from DEV container...", containerName);
+        Instant queryStart = Instant.now();
+        CosmosPagedIterable<ObjectNode> pages = devContainer.queryItems(query, queryOptions, ObjectNode.class);
+
+        AtomicLong containerRead = new AtomicLong(0);
+        AtomicLong containerWritten = new AtomicLong(0);
+        AtomicLong containerFailed = new AtomicLong(0);
+        AtomicLong pageCount = new AtomicLong(0);
+
+        // Process futures in batches to avoid memory issues
+        List<Future<?>> currentBatch = new ArrayList<>();
+        AtomicInteger batchNumber = new AtomicInteger(0);
+
+        // Iterate pages and submit item writes
+        pages.iterableByPage(PAGE_SIZE).forEach(page -> {
+            long currentPage = pageCount.incrementAndGet();
+            
+            // Convert to list to get size and iterate
+            List<ObjectNode> pageItems = new ArrayList<>();
+            page.getElements().forEach(pageItems::add);
+            int itemsInPage = pageItems.size();
+            logger.debug("[{}] Processing page {} with {} items", containerName, currentPage, itemsInPage);
+
+            pageItems.forEach(item -> {
+                containerRead.incrementAndGet();
+                totalRead.incrementAndGet();
+
+                // Submit write task
+                Future<?> future = itemsExecutor.submit(() -> {
+                    try {
+                        // Remove system metadata
+                        item.remove("_etag");
+                        item.remove("_ts");
+                        item.remove("_self");
+                        item.remove("_rid");
+                        item.remove("_attachments");
+
+                        // Resolve partition key value: assume first pk path, e.g. "/pk"
+                        Object pkValue = extractPartitionKeyValue(item, pkPath);
+                        
+                        if (pkValue == null) {
+                            logger.warn("[{}] Item has null partition key, skipping. Item id: {}", 
+                                    containerName, item.get("id"));
+                            containerFailed.incrementAndGet();
+                            totalFailed.incrementAndGet();
+                            return;
+                        }
+
+                        // Upsert item with retry logic
+                        boolean success = upsertItemWithRetry(qaContainer, item, pkValue, containerName);
+                        
+                        if (success) {
+                            containerWritten.incrementAndGet();
+                            totalWritten.incrementAndGet();
+                        } else {
+                            containerFailed.incrementAndGet();
+                            totalFailed.incrementAndGet();
+                        }
+                    } catch (Exception e) {
+                        logger.error("[{}] Failed to upsert item: {}", containerName, e.getMessage(), e);
+                        containerFailed.incrementAndGet();
+                        totalFailed.incrementAndGet();
+                    }
+                });
+                
+                currentBatch.add(future);
+
+                // Process batch when it reaches the batch size
+                if (currentBatch.size() >= FUTURE_BATCH_SIZE) {
+                    processBatch(currentBatch, containerName, batchNumber.getAndIncrement());
+                    currentBatch.clear();
+                }
+            });
+
+            // Optional: throttle small pause to avoid bursting RUs too hard
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                logger.warn("[{}] Interrupted during throttling pause", containerName);
+                Thread.currentThread().interrupt();
+            }
+        });
+
+        // Process remaining futures in the last batch
+        if (!currentBatch.isEmpty()) {
+            processBatch(currentBatch, containerName, batchNumber.get());
+        }
+
+        long queryDuration = Duration.between(queryStart, Instant.now()).getSeconds();
+        logger.info("[{}] Finished querying items in {} seconds. Total pages: {}", 
+                containerName, queryDuration, pageCount.get());
+
+        // Wait for all item tasks to finish with proper shutdown
+        logger.info("[{}] Waiting for all write operations to complete...", containerName);
+        itemsExecutor.shutdown();
+        try {
+            if (!itemsExecutor.awaitTermination(EXECUTOR_SHUTDOWN_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
+                logger.warn("[{}] Item executor did not terminate within {} seconds, forcing shutdown", 
+                        containerName, EXECUTOR_SHUTDOWN_TIMEOUT_SECONDS);
+                itemsExecutor.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            logger.error("[{}] Interrupted while shutting down item executor", containerName, e);
+            itemsExecutor.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
+
+        logger.info("[{}] Container copy completed. read={}, written={}, failed={}", 
+                containerName, containerRead.get(), containerWritten.get(), containerFailed.get());
+    }
+
+    private static CosmosContainer ensureContainerExists(CosmosDatabase qaDb,
+                                                         String containerName,
+                                                         String pkPath,
+                                                         CosmosContainerProperties sourceProps) {
+        try {
+            // Try to read container
+            CosmosContainer container = qaDb.getContainer(containerName);
+            container.read(); // will throw if not exists
+            logger.info("[{}] Container exists in QA", containerName);
+            return container;
+        } catch (Exception ex) {
+            // Create container with all properties copied from source
+            logger.info("[{}] Container missing in QA; creating with properties from source", containerName);
+            
+            // Create new container properties with partition key
+            CosmosContainerProperties props = new CosmosContainerProperties(containerName, pkPath);
+            
+            // Copy indexing policy from source
+            if (sourceProps.getIndexingPolicy() != null) {
+                props.setIndexingPolicy(sourceProps.getIndexingPolicy());
+                logger.debug("[{}] Copied indexing policy from source", containerName);
+            }
+            
+            // Copy unique key policy from source
+            if (sourceProps.getUniqueKeyPolicy() != null) {
+                props.setUniqueKeyPolicy(sourceProps.getUniqueKeyPolicy());
+                logger.debug("[{}] Copied unique key policy from source", containerName);
+            }
+            
+            // Copy default TTL from source
+            if (sourceProps.getDefaultTimeToLiveInSeconds() != null) {
+                props.setDefaultTimeToLiveInSeconds(sourceProps.getDefaultTimeToLiveInSeconds());
+                logger.debug("[{}] Copied default TTL ({} seconds) from source", 
+                        containerName, sourceProps.getDefaultTimeToLiveInSeconds());
+            }
+            
+            // Copy conflict resolution policy from source
+            if (sourceProps.getConflictResolutionPolicy() != null) {
+                props.setConflictResolutionPolicy(sourceProps.getConflictResolutionPolicy());
+                logger.debug("[{}] Copied conflict resolution policy from source", containerName);
+            }
+            
+            // Copy analytical store TTL from source
+            if (sourceProps.getAnalyticalStoreTimeToLiveInSeconds() != null) {
+                props.setAnalyticalStoreTimeToLiveInSeconds(sourceProps.getAnalyticalStoreTimeToLiveInSeconds());
+                logger.debug("[{}] Copied analytical store TTL from source", containerName);
+            }
+           
+            
+            // Copy computed properties if present
+            if (sourceProps.getComputedProperties() != null && !sourceProps.getComputedProperties().isEmpty()) {
+                props.setComputedProperties(sourceProps.getComputedProperties());
+                logger.debug("[{}] Copied {} computed properties from source", 
+                        containerName, sourceProps.getComputedProperties().size());
+            }
+            
+            // Copy client encryption policy if present
+            if (sourceProps.getClientEncryptionPolicy() != null) {
+                props.setClientEncryptionPolicy(sourceProps.getClientEncryptionPolicy());
+                logger.debug("[{}] Copied client encryption policy from source", containerName);
+            }
+            
+            // Copy change feed policy if present
+            if (sourceProps.getChangeFeedPolicy() != null) {
+                props.setChangeFeedPolicy(sourceProps.getChangeFeedPolicy());
+                logger.debug("[{}] Copied change feed policy from source", containerName);
+            }
+            
+            // Try to create container with throughput first (for provisioned accounts)
+            // If it fails with serverless error, retry without throughput
+            try {
+                ThroughputProperties tp = ThroughputProperties.createAutoscaledThroughput(4000);
+                qaDb.createContainerIfNotExists(props, tp);
+                logger.info("[{}] Container created successfully in QA with autoscale throughput (4000 RU)", containerName);
+            } catch (CosmosException e) {
+                // Check if error is due to serverless account
+                if (e.getStatusCode() == 400 && 
+                    e.getMessage() != null && 
+                    e.getMessage().contains("serverless accounts")) {
+                    logger.info("[{}] QA database is serverless - creating container without throughput", containerName);
+                    // Retry without throughput for serverless accounts
+                    qaDb.createContainerIfNotExists(props);
+                    logger.info("[{}] Container created successfully in QA (serverless mode, no throughput set)", containerName);
+                } else {
+                    // Re-throw if it's a different error
+                    throw e;
+                }
+            }
+            
+            return qaDb.getContainer(containerName);
+        }
+    }
+
+    private static void deleteAllItemsInContainer(CosmosContainer container, String pkPath) {
+        String containerName = container.getId();
+        logger.info("[{}] Starting to delete all items from container...", containerName);
+        
+        AtomicLong deletedCount = new AtomicLong(0);
+        AtomicLong failedCount = new AtomicLong(0);
+        
+        // Simple approach: read all items and delete by partition key
+        CosmosQueryRequestOptions options = new CosmosQueryRequestOptions();
+        options.setMaxBufferedItemCount(PAGE_SIZE);
+        CosmosPagedIterable<ObjectNode> items = container.queryItems("SELECT c.id, c" + getPkJsonFragment(pkPath) + " FROM c", options, ObjectNode.class);
+
+        items.iterableByPage(PAGE_SIZE).forEach(page -> {
+            page.getElements().forEach(item -> {
+                try {
+                    JsonNode idNode = item.get("id");
+                    String id = idNode != null ? idNode.asText() : null;
+                    Object pkValue = extractPartitionKeyValue(item, pkPath);
+                    if (id != null && pkValue != null) {
+                        container.deleteItem(id, new PartitionKey(pkValue), new CosmosItemRequestOptions());
+                        deletedCount.incrementAndGet();
+                    } else {
+                        logger.warn("[{}] Skipping delete - item has null id or partition key", containerName);
+                        failedCount.incrementAndGet();
+                    }
+                } catch (Exception e) {
+                    logger.error("[{}] Delete item failed: {}", containerName, e.getMessage());
+                    failedCount.incrementAndGet();
+                }
+            });
+        });
+        
+        logger.info("[{}] Deletion completed. deleted={}, failed={}", containerName, deletedCount.get(), failedCount.get());
+    }
+
+    // Helper: extract partition key value from item given partition path like "/pk"
+    private static Object extractPartitionKeyValue(JsonNode item, String pkPath) {
+        // Remove leading slash
+        String path = pkPath.startsWith("/") ? pkPath.substring(1) : pkPath;
+        JsonNode pkNode = item.get(path);
+        if (pkNode == null || pkNode.isNull()) {
+            // fallback to id
+            JsonNode id = item.get("id");
+            return id != null ? id.asText() : null;
+        }
+        if (pkNode.isTextual()) return pkNode.asText();
+        if (pkNode.isNumber()) return pkNode.numberValue();
+        // other types -> use string
+        return pkNode.toString();
+    }
+
+    private static void processBatch(List<Future<?>> batch, String containerName, int batchNumber) {
+        logger.debug("[{}] Processing batch {} with {} futures", containerName, batchNumber, batch.size());
+        for (Future<?> f : batch) {
+            try {
+                f.get(); // Wait for completion
+            } catch (InterruptedException ie) {
+                logger.error("[{}] Interrupted while waiting for batch {} future", containerName, batchNumber, ie);
+                Thread.currentThread().interrupt();
+            } catch (ExecutionException ee) {
+                logger.error("[{}] Item write task failed in batch {}: {}", containerName, batchNumber, ee.getMessage());
+            }
+        }
+        logger.debug("[{}] Batch {} completed", containerName, batchNumber);
+    }
+
+    private static boolean upsertItemWithRetry(CosmosContainer container, ObjectNode item, Object pkValue, String containerName) {
+        int attempt = 0;
+        while (attempt < MAX_RETRIES) {
+            try {
+                container.upsertItem(item, new PartitionKey(pkValue), new CosmosItemRequestOptions());
+                if (attempt > 0) {
+                    logger.debug("[{}] Item upsert succeeded after {} retries. Item id: {}", 
+                            containerName, attempt, item.get("id"));
+                }
+                return true;
+            } catch (CosmosException e) {
+                attempt++;
+                if (e.getStatusCode() == 429) {
+                    // Rate limiting - retry with backoff
+                    long retryAfter = e.getRetryAfterDuration().toMillis();
+                    if (attempt < MAX_RETRIES) {
+                        logger.warn("[{}] Rate limited (429) on attempt {}/{}. Retrying after {}ms. Item id: {}", 
+                                containerName, attempt, MAX_RETRIES, retryAfter, item.get("id"));
+                        try {
+                            Thread.sleep(Math.max(retryAfter, RETRY_DELAY_MS));
+                        } catch (InterruptedException ie) {
+                            Thread.currentThread().interrupt();
+                            logger.error("[{}] Interrupted during retry delay", containerName);
+                            return false;
+                        }
+                    } else {
+                        logger.error("[{}] Rate limited (429) - max retries exceeded. Item id: {}", 
+                                containerName, item.get("id"));
+                        return false;
+                    }
+                } else if (e.getStatusCode() >= 500) {
+                    // Server error - retry
+                    if (attempt < MAX_RETRIES) {
+                        logger.warn("[{}] Server error {} on attempt {}/{}. Retrying in {}ms. Item id: {}", 
+                                containerName, e.getStatusCode(), attempt, MAX_RETRIES, RETRY_DELAY_MS, item.get("id"));
+                        try {
+                            Thread.sleep(RETRY_DELAY_MS * attempt); // Exponential backoff
+                        } catch (InterruptedException ie) {
+                            Thread.currentThread().interrupt();
+                            logger.error("[{}] Interrupted during retry delay", containerName);
+                            return false;
+                        }
+                    } else {
+                        logger.error("[{}] Server error {} - max retries exceeded. Item id: {}", 
+                                containerName, e.getStatusCode(), item.get("id"));
+                        return false;
+                    }
+                } else {
+                    // Client error (4xx) - don't retry
+                    logger.error("[{}] Client error {} on upsert. Not retrying. Item id: {}", 
+                            containerName, e.getStatusCode(), item.get("id"));
+                    return false;
+                }
+            } catch (Exception e) {
+                attempt++;
+                if (attempt < MAX_RETRIES) {
+                    logger.warn("[{}] Unexpected error on attempt {}/{}. Retrying in {}ms. Item id: {}. Error: {}", 
+                            containerName, attempt, MAX_RETRIES, RETRY_DELAY_MS, item.get("id"), e.getMessage());
+                    try {
+                        Thread.sleep(RETRY_DELAY_MS * attempt);
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                        logger.error("[{}] Interrupted during retry delay", containerName);
+                        return false;
+                    }
+                } else {
+                    logger.error("[{}] Unexpected error - max retries exceeded. Item id: {}. Error: {}", 
+                            containerName, item.get("id"), e.getMessage());
+                    return false;
+                }
+            }
+        }
+        return false;
+    }
+
+    private static String getPkJsonFragment(String pkPath) {
+        // returns like "['pk']" not used widely; kept for potential projection
+        return "";
+    }
+
+    private static void validateEnv() {
+        logger.info("Validating connection strings...");
+        if (DEV_URI == null || DEV_URI.isEmpty() || DEV_URI.contains("your-") ||
+                DEV_KEY == null || DEV_KEY.isEmpty() || DEV_KEY.contains("your-") ||
+                DEV_DB == null || DEV_DB.isEmpty() || DEV_DB.contains("your-") ||
+                QA_URI == null || QA_URI.isEmpty() || QA_URI.contains("your-") ||
+                QA_KEY == null || QA_KEY.isEmpty() || QA_KEY.contains("your-") ||
+                QA_DB == null || QA_DB.isEmpty() || QA_DB.contains("your-")) {
+            logger.error("Connection strings are not configured. Please update the hardcoded values in the code.");
+            logger.error("DEV_URI={}, DEV_DB={}, QA_URI={}, QA_DB={}", DEV_URI, DEV_DB, QA_URI, QA_DB);
+            System.exit(1);
+        }
+        logger.info("Connection strings validated successfully");
+    }
+
+    private static String getenv(String name) {
+        String v = System.getenv(name);
+        if (v == null) v = System.getProperty(name);
+        return v;
+    }
+
+    private static String getenvOrDefault(String name, String def) {
+        String v = getenv(name);
+        return v == null ? def : v;
+    }
+    
+    /**
+     * Parse container filter from comma-separated string
+     * @param filterStr Comma-separated container names (e.g., "container1,container2,container3")
+     * @return Set of container names to filter, empty set if filterStr is empty/null
+     */
+    private static Set<String> parseContainerFilter(String filterStr) {
+        if (filterStr == null || filterStr.trim().isEmpty()) {
+            return new HashSet<>();
+        }
+        return Arrays.stream(filterStr.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.toSet());
+    }
+}

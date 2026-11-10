@@ -1,0 +1,23 @@
+package interview;
+
+public class FindMinimumOfMinimu {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		int arr[] = {2, 5, -1, 7, -3, -1, -2};
+		int len=4;
+		int minOfmin=Integer.MAX_VALUE;
+		for (int i = 0; i <= arr.length-4; i++) {
+			int min=arr[i];
+			for (int j = 0; j <len ; j++) {
+				min=Math.min(min, arr[i+j]);
+				
+
+			}
+			System.out.println(min);
+			minOfmin=Math.min(minOfmin, min);
+		}
+		System.out.println(minOfmin);
+	}
+
+}

@@ -1,0 +1,40 @@
+package interview;
+
+public class MoveZeroToEnd {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		int arr[]= {0,1,0,3,12,0};
+		int count=0;
+		int pointer=-1;
+		for(int i=0;i<arr.length;i++) {
+			if(arr[i]==0) {
+				pointer=i;
+				count++;
+				break;
+			}
+		}
+		for(int i=pointer+1;i<arr.length;i++) {
+			if(arr[i]==0) {
+				count++;
+			}else {
+				arr[pointer]=arr[i];
+				pointer++;
+				
+			}
+			
+		}
+		for(int i=pointer;i<arr.length;i++) {
+			arr[i]=0;
+			
+		}
+		for(int i=0;i<arr.length;i++) {
+			System.out.println(arr[i]);
+			
+		}
+		
+		
+
+	}
+
+}

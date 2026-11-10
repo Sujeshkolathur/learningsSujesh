@@ -1,0 +1,31 @@
+package interview.coding1;
+
+public class SmallestMissingPositiveInteger {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		 int[] arr = new int[] {3, 4, -1, 1,2,6};
+		 int smallest = findSmallest(arr);
+		 System.out.println(smallest);
+	}
+
+	private static int findSmallest(int[] arr) {
+		for(int i=0;i<arr.length;i++) {
+			int actualIndex=arr[i]-1;
+			while(arr[i]>0&&arr[i]<=arr.length && arr[arr[i]-1]!=arr[i]) {
+				int correctIndex = arr[i]-1;
+				int temp=arr[i];
+				arr[i]=arr[correctIndex];
+				arr[correctIndex] = temp;
+			}
+		}
+		for (int i = 0; i < arr.length; i++) {
+			if(arr[i]!=i+1) {
+				return i+1;
+			}
+			
+		}
+		return 0;
+	}
+
+}

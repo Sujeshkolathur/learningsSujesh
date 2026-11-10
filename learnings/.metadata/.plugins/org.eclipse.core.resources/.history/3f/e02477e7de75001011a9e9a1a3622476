@@ -1,0 +1,44 @@
+package DSA;
+
+public class QuickSort2 {
+
+	public static void main(String[] args) {
+		int[] arr= new int[] {1,8,4,2,6,3,7,9};
+		quickSort(arr,0,arr.length-1);
+		for (int i : arr) {
+			System.out.println(i);
+		}
+
+	}
+
+	private static void quickSort(int[] arr, int low, int high) {
+		
+		if(low<high) {
+			int pi=partition(arr,low,high);
+			quickSort(arr, low, pi-1);
+			quickSort(arr, pi+1, high);
+		}
+		
+	}
+
+	private static int partition(int[] arr, int low, int high) {
+		int pi=arr[high];
+		int i=low-1;
+		for (int j = low; j < high; j++) {
+			if(arr[j]<pi) {
+				i++;
+				swap(arr,j,i);
+			}
+		}
+		swap(arr, high, i+1);
+		return i+1;
+	}
+
+	private static void swap(int[] arr, int j, int i) {
+		int temp=arr[j];
+		arr[j]=arr[i];
+		arr[i]=temp;
+		
+	}
+
+}

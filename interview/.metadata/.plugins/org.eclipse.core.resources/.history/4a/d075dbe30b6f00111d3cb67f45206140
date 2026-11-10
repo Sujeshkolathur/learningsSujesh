@@ -1,0 +1,34 @@
+package interview;
+
+public class HashCodeEqualsContract {
+
+	public static void main(String[] args) {
+		String s1 = "java"; 
+		// "java" is stored in the String Constant Pool (SCP), and s1 points to it.
+
+		String s2 = "ja" + "va"; 
+		// "ja" + "va" is a compile-time constant expression.
+		// The compiler optimizes it to "java", so s2 points to the same SCP object as s1.
+
+		String s3 = new String("java"); 
+		// Creates a new String object in the heap.
+		// Although "java" exists in the SCP, 'new' forces creation of a separate heap object.
+
+		String s4 = s3.intern(); 
+		// intern() returns the reference to the String Constant Pool object.
+		// Since "java" already exists in the SCP, s4 points to the same object as s1.
+
+		System.out.println(s1 == s2); // true
+		// Both s1 and s2 refer to the same String Constant Pool object.
+
+		System.out.println(s1 == s3); // false
+		// s1 points to the SCP object, while s3 points to a different heap object.
+
+		System.out.println(s1 == s4); // true
+		// s4 is the interned version of s3 and points to the SCP object, same as s1.
+
+		System.out.println(s3 == s4); // false
+		// s3 points to the heap object, while s4 points to the SCP object.
+	}
+
+}

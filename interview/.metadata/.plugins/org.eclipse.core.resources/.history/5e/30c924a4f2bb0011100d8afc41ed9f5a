@@ -1,0 +1,147 @@
+package interview.coding1;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+public class StreamApi {
+
+	public static void main(String[] args) {
+
+		List<Employee> employeeList =  extracted();
+		
+		Map<String, Map<String, Object>> countAndAvgSalary = findCountAndAvgSalary(employeeList);
+		System.out.println("Count and avg salary ="+countAndAvgSalary);
+		System.out.println("department sand sum of salary ="+		employeeList.stream().collect(Collectors.groupingBy(Employee::getDepartment, Collectors.summingDouble(Employee::getSalary))));
+		System.out.println("count emeployee in department ="+employeeList.stream().collect(Collectors.groupingBy(Employee::getDepartment, Collectors.counting())));
+		System.out.println("Highest paid employee=" +employeeList.stream().max(Comparator.comparingDouble(Employee::getSalary)).orElse(null));
+		System.out.println("Lowest paid employee=" +employeeList.stream().min(Comparator.comparingDouble(Employee::getSalary)).orElse(null));
+		System.out.println("Lowest paid employee=" +employeeList.stream().sorted(Comparator.comparingDouble(Employee::getSalary).reversed()).skip(1).findFirst().orElse(null));
+		System.out.println("@nd Highest salaried Employee=" +employeeList.stream().collect(Collectors.groupingBy(Employee::getSalary)).entrySet().stream().sorted(Map.Entry.<Double, List<Employee>>comparingByKey().reversed()).skip(1).flatMap(e->e.getValue().stream()).findFirst().orElse(null));
+		System.out.println("highest salary in each department =" +employeeList.stream().collect(Collectors.groupingBy(Employee::getDepartment,Collectors.maxBy(Comparator.comparingDouble(Employee::getSalary)))));
+		System.out.println("highest salary employee in each department =" +employeeList.stream().collect(Collectors.toMap(Employee::getDepartment,Function.identity(),BinaryOperator.maxBy(Comparator.comparingDouble(Employee::getSalary)))));
+		System.out.println("Employee names grouped by department =" +employeeList.stream().collect(Collectors.groupingBy(Employee::getDepartment, Collectors.mapping(Employee::getName, Collectors.toList()))));
+
+	}
+
+	private static Map<String, Map<String, Object>> findCountAndAvgSalary(List<Employee> employeeList) {
+		return employeeList.stream().collect(Collectors.groupingBy(Employee::getDepartment, Collectors.collectingAndThen(Collectors.toList(),list-> Map.of("count", list.size(), "averageSalary", list.stream().mapToDouble(Employee::getSalary).average()))));
+		 	}
+
+	private static List<Employee> extracted() {
+		List<Employee> employees = new ArrayList<>();
+
+        String[] names = {
+                "Arun", "Rahul", "Akhil", "Suresh", "Vijay",
+                "Ramesh", "Anil", "Kiran", "Nikhil", "Deepak",
+                "Manu", "Vishnu", "Ajay", "Amal", "Rohit",
+                "Neeraj", "Sanjay", "Abhishek", "Naveen", "Hari"
+        };
+
+        String[] departments = {
+                "IT", "HR", "Finance", "Sales", "Marketing"
+        };
+
+        String[][] skillPool = {
+                {"Java", "Spring Boot", "Microservices"},
+                {"Java", "Kafka", "Docker"},
+                {"Python", "AWS", "Docker"},
+                {"Java", "AWS", "Kubernetes"},
+                {"React", "JavaScript", "HTML"},
+                {"SQL", "Oracle", "Java"},
+                {"Azure", "Java", "Spring Boot"},
+                {"Docker", "Kubernetes", "AWS"}
+        };
+
+        Random random = new Random(10);
+
+        for (int i = 1; i <= 100; i++) {
+
+            String name = names[(i - 1) % names.length]
+                    + " " + i;
+
+            String department =
+                    departments[random.nextInt(departments.length)];
+
+            double salary =
+                    40000 + (random.nextInt(16) * 5000);
+
+            int age =
+                    22 + random.nextInt(24);
+
+            List<String> skills =
+                    Arrays.asList(
+                            skillPool[random.nextInt(skillPool.length)]
+                    );
+
+            Employee employee = new Employee(
+                    i,
+                    name,
+                    department,
+                    salary,
+                    age,
+                    skills
+            );
+
+            employees.add(employee);
+        }
+        return employees;
+	}
+
+}
+
+class Employee {
+
+    private int id;
+    private String name;
+    private String department;
+    private double salary;
+    private int age;
+    private List<String> skills;
+
+    public Employee(int id, String name, String department,
+                    double salary, int age, List<String> skills) {
+        this.id = id;
+        this.name = name;
+        this.department = department;
+        this.salary = salary;
+        this.age = age;
+        this.skills = skills;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDepartment() {
+        return department;
+    }
+
+    public double getSalary() {
+        return salary;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public List<String> getSkills() {
+        return skills;
+    }
+
+    @Override
+    public String toString() {
+        return name + " - " + salary;
+    }
+}

@@ -1,0 +1,8 @@
+# Profile: prod (different subscriptions – separate Service Principal for source and target)
+# Set COSMOS_ENV=prod. Do NOT use shared AZURE_*; set endpoint-specific credentials:
+#   Source: COSMOS_SOURCE_TENANT_ID, COSMOS_SOURCE_CLIENT_ID, COSMOS_SOURCE_CLIENT_SECRET
+#   Target: COSMOS_TARGET_TENANT_ID, COSMOS_TARGET_CLIENT_ID, COSMOS_TARGET_CLIENT_SECRET
+# Plus: COSMOS_SOURCE_URI, COSMOS_SOURCE_DATABASE, COSMOS_TARGET_URI, COSMOS_TARGET_DATABASE
+cosmos.source.database=${COSMOS_SOURCE_DATABASE:GlossaryDB}
+cosmos.target.database=${COSMOS_TARGET_DATABASE:GlossaryDB}
+cosmos.container.filter=${COSMOS_CONTAINER_FILTER:glossaryNodes}

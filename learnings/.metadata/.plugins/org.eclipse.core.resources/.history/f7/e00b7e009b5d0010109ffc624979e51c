@@ -1,0 +1,44 @@
+package java8;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
+public class Comparator1 {
+
+	public static void main(String[] args) {
+		List<Employee> employeeList = List.of(new Employee("Sujesh", 1000L), new Employee("sujith", 10000L), new Employee("Sandra", 20000L));
+		Comparator<Employee> nameComparator = (e1,e2)->e1.getName().compareToIgnoreCase(e2.getName());
+		List<Employee> employees = new ArrayList<>();
+		employees.addAll(employeeList);
+		
+		
+		employees.sort(nameComparator);
+		employees.forEach(e->System.out.println(e.getName()));
+
+	}
+
+}
+
+class Employee{
+	private String name;
+	private Long Salary;
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public Long getSalary() {
+		return Salary;
+	}
+	public void setSalary(Long salary) {
+		Salary = salary;
+	}
+	public Employee(String name, Long salary) {
+		super();
+		this.name = name;
+		Salary = salary;
+	}
+	
+}

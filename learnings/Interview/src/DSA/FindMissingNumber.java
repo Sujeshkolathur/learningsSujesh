@@ -1,0 +1,24 @@
+package DSA;
+
+public class FindMissingNumber {
+
+	public static void main(String[] args) {
+		int[] nums = { 3, 0, 1 };
+		System.out.println("Missing Number: " + findMissingNumber(nums)); // Output: 2
+
+	}
+
+	private static String findMissingNumber(int[] nums) {
+		int n= nums.length;
+		int sum = n*(n+1)/2;
+		int actualSum=0;
+		for (int i = 0; i < nums.length; i++) {
+			actualSum+=nums[i];
+			
+		}
+		int missingNumber=sum-actualSum;
+		
+		return String.valueOf( missingNumber);
+	}
+
+}

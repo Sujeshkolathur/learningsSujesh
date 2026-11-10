@@ -1,0 +1,4 @@
+GitRepositoriesView.GitDirectories=C\:\\TJ\\code\\Production\\Git\\tj\\pp-cosmosdb-scripts\\.git;C\:\\TJ\\code\\Production\\Git\\tj\\pimcore\\orbc\\pp-pimcore-service\\.git;
+GitRepositoriesView.GitDirectories.relative=C\:\\TJ\\code\\Production\\Git\\tj\\pp-cosmosdb-scripts\\.git;C\:\\TJ\\code\\Production\\Git\\tj\\pimcore\\orbc\\pp-pimcore-service\\.git;
+core_autoIgnoreDerivedResources=false
+eclipse.preferences.version=1

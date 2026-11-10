@@ -1,0 +1,31 @@
+package interview.coding1;
+
+import java.util.LinkedHashMap;
+import java.util.Scanner;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+public class FirstNonRepeatingCharacter {
+
+	public static void main(String[] args) {
+		Scanner sc =  new Scanner(System.in);
+		System.out.println("Enter a word");
+		String word = sc.nextLine();
+		String trimmedWord = word.trim();
+		System.out.println( 
+				trimmedWord
+				.toLowerCase()
+				.chars()
+				.mapToObj(c->(char)c)
+				.collect(Collectors.groupingBy(Function.identity(),LinkedHashMap::new ,Collectors.counting()))//map of character and the count
+				.entrySet()
+				.stream()
+				.filter(a->a.getValue()<2)
+				.findFirst()
+				.get()
+				.getKey()
+				.toString());
+
+	}
+
+}

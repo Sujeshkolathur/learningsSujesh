@@ -1,0 +1,21 @@
+package sample;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+public class HelloWorld {
+
+	public static void main(String[] args) {
+		//smallest number by using reduce
+		List<Integer> numbers = List.of(1, 2, 3, 4, 5);
+		Integer reduce = numbers.stream()
+				.reduce(Integer.MAX_VALUE, (a,b)->a<b?a:b);
+		System.out.println("smallest of integers: " + reduce);
+		
+
+	}
+
+}

@@ -1,0 +1,31 @@
+package interview.coding1;
+
+public class MoveAllZerosToEnd {
+
+	public static void main(String[] args) {
+		int[] arr = new int[] {1,0,0,0,5,7,9,0,3};
+		//arr = move(arr);
+		arr = move(arr);
+		for (int i : arr) {
+			System.out.println(i);
+		}
+	}
+
+	
+
+	private static int[] move(int[] arr) {
+		int index=0;
+		
+		for (int i = 0; i < arr.length; i++) {
+			if(arr[i]==0&&index==-1) {
+				index=i;
+			}else if(arr[i]!=0 && index!=-1) {
+				arr[index]=arr[i];
+				arr[i]=0;
+				index++;
+			}
+		}
+		return arr;
+	}
+
+}

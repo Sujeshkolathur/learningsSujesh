@@ -1,0 +1,20 @@
+package interview.coding1;
+
+public class ReverseString {
+
+	public static void main(String[] args) {
+		String str = "Hello World";
+		String reversedString = reverse(str);
+		System.out.println(reversedString);
+	}
+
+	private static String reverse(String str) {
+		StringBuilder stringBuilder = new StringBuilder();
+
+		for (int i = str.length() - 1; i >= 0; i--) {
+			stringBuilder.append(str.charAt(i));
+		}
+		return stringBuilder.toString();
+	}
+
+}

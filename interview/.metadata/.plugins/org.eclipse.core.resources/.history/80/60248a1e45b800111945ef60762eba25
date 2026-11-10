@@ -1,0 +1,11 @@
+package interview.coding1;
+
+public class RemoveDuplicatesFromSortedArray {
+
+	public static void main(String[] args) {
+		int[] arr = new int[] {1,2,2,3,3,6,6};
+		
+
+	}
+
+}

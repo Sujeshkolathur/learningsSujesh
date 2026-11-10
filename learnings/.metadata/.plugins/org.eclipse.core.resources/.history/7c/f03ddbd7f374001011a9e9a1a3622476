@@ -1,0 +1,25 @@
+package designpatter.behavioural.state;
+
+public class FanContext {
+	
+	public interface FanState {
+		void showState();
+		void nextState(FanContext context);
+	}
+	public class OffState implements FanState{
+
+		@Override
+		public void showState() {
+			System.out.println("Fan is OFF");
+			
+		}
+
+		@Override
+		public void nextState(FanContext context) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+	}
+
+}

@@ -1,0 +1,140 @@
+package com.example.svgpdf;
+
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+import javax.imageio.ImageIO;
+
+import org.apache.batik.transcoder.TranscoderInput;
+import org.apache.batik.transcoder.image.PNGTranscoder;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import com.lowagie.text.Document;
+import com.lowagie.text.Image;
+import com.lowagie.text.PageSize;
+import com.lowagie.text.Phrase;
+import com.lowagie.text.Rectangle;
+import com.lowagie.text.pdf.PdfPCell;
+import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.pdf.PdfWriter;
+
+@SpringBootApplication
+public class SvgToPdfApplication {
+
+    public static void main(String[] args) throws Exception {
+
+        SpringApplication.run(SvgToPdfApplication.class, args);
+
+        // ============================================================
+        // INPUT SVG FILE
+        // ============================================================
+        String svgFilePath = "src/main/resources/sample.svg";
+
+        // ============================================================
+        // OUTPUT FILES
+        // ============================================================
+        String pngOutputPath = "output/sample.png";
+        String pdfOutputPath = "output/output.pdf";
+
+        // Create output directory if not exists
+        Files.createDirectories(Paths.get("output"));
+
+        // ============================================================
+        // READ SVG FILE
+        // ============================================================
+        byte[] svgBytes = Files.readAllBytes(Paths.get(svgFilePath));
+
+        // ============================================================
+        // CONVERT SVG -> PNG USING APACHE BATIK
+        // ============================================================
+        PNGTranscoder transcoder = new PNGTranscoder();
+
+        // Optional scaling
+        transcoder.addTranscodingHint(PNGTranscoder.KEY_WIDTH, 300f);
+        transcoder.addTranscodingHint(PNGTranscoder.KEY_HEIGHT, 300f);
+
+        TranscoderInput input = new TranscoderInput(
+                new ByteArrayInputStream(svgBytes));
+
+        ByteArrayOutputStream pngOutputStream = new ByteArrayOutputStream();
+
+        org.apache.batik.transcoder.TranscoderOutput output =
+                new org.apache.batik.transcoder.TranscoderOutput(pngOutputStream);
+
+        transcoder.transcode(input, output);
+
+        byte[] pngBytes = pngOutputStream.toByteArray();
+
+        // ============================================================
+        // WRITE PNG TO LOCAL DIRECTORY
+        // ============================================================
+        Files.write(Paths.get(pngOutputPath), pngBytes);
+
+        System.out.println("PNG created at: " + pngOutputPath);
+
+        // ============================================================
+        // CREATE PDF
+        // ============================================================
+        Document document = new Document(PageSize.A4);
+
+        PdfWriter.getInstance(document,
+                new FileOutputStream(pdfOutputPath));
+
+        document.open();
+
+        // ============================================================
+        // CREATE TABLE
+        // ============================================================
+        PdfPTable table = new PdfPTable(1);
+        table.setWidthPercentage(100);
+
+        // ============================================================
+        // CREATE CELL
+        // ============================================================
+        PdfPCell cell = new PdfPCell();
+        cell.setPadding(10);
+        cell.setBorder(Rectangle.BOX);
+
+        // ============================================================
+        // ADD TEXT TO CELL
+        // ============================================================
+        cell.addElement(new Phrase("SVG converted to PNG and added to PDF"));
+
+        // ============================================================
+        // LOAD PNG IMAGE
+        // ============================================================
+        Image image = Image.getInstance(pngBytes);
+
+        // Scale image
+        image.scaleToFit(250, 250);
+
+        // ============================================================
+        // ADD IMAGE TO CELL
+        // ============================================================
+        cell.addElement(image);
+
+        // ============================================================
+        // ADD CELL TO TABLE
+        // ============================================================
+        table.addCell(cell);
+
+        // ============================================================
+        // ADD TABLE TO PDF
+        // ============================================================
+        document.add(table);
+
+        // ============================================================
+        // CLOSE PDF
+        // ============================================================
+        document.close();
+
+        System.out.println("PDF created at: " + pdfOutputPath);
+    }
+}

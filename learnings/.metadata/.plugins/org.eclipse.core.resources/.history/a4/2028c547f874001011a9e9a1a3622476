@@ -1,0 +1,80 @@
+package designpatter.behavioural.state;
+
+public class FanContext {
+	
+	private FanState state;
+	
+	public void setState(FanState state) {
+		this.state = state;
+		
+	}
+
+	public void pressButton() {
+		state.showState();
+		state.nextState(this);
+	}
+	
+	public FanContext() {
+		this.state = new OffState(); // Initial state is Off
+	}
+	
+	
+	public interface FanState {
+		void showState();
+		void nextState(FanContext context);
+	}
+	public class OffState implements FanState{
+
+		@Override
+		public void showState() {
+			System.out.println("Fan is OFF");
+			
+		}
+
+		@Override
+		public void nextState(FanContext fan) {
+			fan.setState(new MediumState());
+			
+		}
+		
+	}
+	public class MediumState implements FanState{
+
+		@Override
+		public void showState() {
+			System.out.println("Fan is in MEDIUM state");
+			
+		}
+
+		@Override
+		public void nextState(FanContext fan) {
+			fan.setState(new HighState());
+			
+		}
+		
+	}
+	public class HighState implements FanState{
+
+		@Override
+		public void showState() {
+			System.out.println("Fan is in High state");
+			
+		}
+
+		@Override
+		public void nextState(FanContext fan) {
+			fan.setState(new OffState());
+			
+		}
+		
+	}
+	
+	public static void main(String[] args) {
+		FanContext fan = new FanContext();
+		fan.pressButton(); // Fan is OFF
+		fan.pressButton(); // Fan is in MEDIUM state
+		fan.pressButton(); // Fan is in High state
+		fan.pressButton(); // Fan is OFF
+	}
+
+}

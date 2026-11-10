@@ -1,0 +1,17 @@
+package sample;
+
+import java.util.stream.Stream;
+
+public class HelloWorld {
+
+	public static void main(String[] args) {
+		// smallest number by using reduce
+		Stream<String> stream = Stream.of("A", "B", "C");
+
+		stream.forEach(System.out::println);
+
+		stream.forEach(System.out::println);
+
+	}
+
+}

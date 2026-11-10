@@ -1,0 +1,12 @@
+package interview.coding1;
+
+import java.util.List;
+
+public class FindAppearingTwice {
+
+	public static void main(String[] args) {
+		int[] arr = new int[] { 1, 2, 3, 4, 5, 6, 1, 2, 4, 6 };
+		List<Integer> result = new findAppearingTwice(arr);
+	}
+
+}

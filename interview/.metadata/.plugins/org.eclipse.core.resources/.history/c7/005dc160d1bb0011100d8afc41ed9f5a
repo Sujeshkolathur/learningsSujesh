@@ -1,0 +1,25 @@
+package interview.coding1;
+
+import java.util.HashSet;
+import java.util.Set;
+
+public class FindAllPairsForTheTarget {
+
+	public static void main(String[] args) {
+		int target = 9;
+		int[] arr = {1,2,3,4,5,12,34,5,66};
+		Set<Integer> seen = new HashSet<>();
+		Set<String> pairs = new HashSet<>();
+		for (int num : arr) {
+			int compliment = target-num;
+			if(seen.contains(compliment)) {
+				int max = Math.max(compliment, num);
+				int min = Math.min(compliment, num);
+				String pair = min+","+max;
+				pairs.add(pair);
+			}
+			
+		}
+	}
+
+}

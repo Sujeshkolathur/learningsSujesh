@@ -1,0 +1,47 @@
+package interview;
+
+import java.util.HashSet;
+import java.util.Set;
+
+public class HashCodeEqualsContract {
+
+	public static void main(String[] args) {
+		Set<Person> persons = new HashSet<>();
+		Person person1 = new Person("Java");
+		Person person2 = new Person("Java");
+		persons.add(person1);
+		persons.add(person2);
+		System.out.println(persons.size());
+		
+		
+		Set<Person> personsOver = new HashSet<>();
+		Person person1 = new Person("Java");
+		Person person2 = new Person("Java");
+		persons.add(person1);
+		persons.add(person2);
+		System.out.println(persons.size());
+
+	}
+
+}
+
+class Person{
+	String name;
+
+	public Person(String name) {
+		super();
+		this.name = name;
+	}
+	
+}
+class PersonV2{
+	String name;
+
+	public PersonV2(String name) {
+		super();
+		this.name = name;
+	}
+	
+	
+}
+

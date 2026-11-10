@@ -1,0 +1,19 @@
+package interview.coding1;
+
+public class RemoveDuplicates {
+
+	public static void main(String[] args) {
+		String str = new String("programming");
+		StringBuilder sb =  new StringBuilder();
+		for (int i = 0; i < str.length(); i++) {
+			char charAt = str.charAt(i);
+			if(sb.indexOf(String.valueOf(charAt))==-1) {
+				sb.append(String.valueOf(charAt));
+				
+			}
+			
+		}
+		System.out.println(sb);
+	}
+
+}

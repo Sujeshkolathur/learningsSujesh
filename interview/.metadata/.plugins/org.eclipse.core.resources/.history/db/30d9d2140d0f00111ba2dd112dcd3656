@@ -1,0 +1,27 @@
+package interview;
+
+import java.util.Arrays;
+import java.util.List;
+
+public class LongestConsecutive {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		List<Integer> nums= Arrays.asList(100, 4,5,6,8 ,200, 1, 3, 2);
+		int longest =0;
+		for(int i=0;i<nums.size();i++)
+				{
+			int count =1;
+			int temp=nums.get(i);
+			if(!nums.contains(nums.get(i)-1)) {
+				while(nums.contains(temp+1)) {
+					count++;
+					temp++;
+				}
+				longest=Math.max(longest, count);}
+			
+	}
+		System.out.println(longest);
+	}
+
+}

@@ -1,0 +1,16 @@
+package interview.coding1;
+
+import java.util.Arrays;
+
+public class ThreeSum {
+
+	public static void main(String[] args) {
+		int[] nums= new int[] {1,2,3,4,7,2,5};
+		
+		Arrays.sort(nums);
+		
+		Arrays.asList(nums).forEach(System.out::println);
+
+	}
+
+}

@@ -1,0 +1,26 @@
+package interview.coding1;
+
+public class AnagramCheck {
+
+	public static void main(String[] args) {
+		String word1 = new String("ailent");
+		String word2 = new String("listen");
+		System.out.println(extracted(word1, word2));
+		
+	}
+
+	private static Boolean extracted(String word1, String word2) {
+		int[] count = new int[256];// array to add and subtract the character
+		for (int i = 0; i < word1.length(); i++) {
+			count[word1.charAt(i)]++;
+			count[word2.charAt(i)]--;
+		}
+		for (int value : count) {
+			if (value != 0) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+}

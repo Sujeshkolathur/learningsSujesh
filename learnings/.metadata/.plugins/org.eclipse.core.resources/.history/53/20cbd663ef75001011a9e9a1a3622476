@@ -1,0 +1,69 @@
+package datastructure;
+
+public class LinkedList {
+	Node head;
+	
+	public LinkedList(Node node) {
+		this.head=node;
+	}
+	
+	public void insert(int data) {
+		Node node =  new Node(data, null);
+		if(head==null) {
+			head=node;
+		}else {
+			Node n= head;
+			while(n.next!=null) {
+				n=n.next;
+			}
+			n.next=node;
+		}
+		
+	}
+	public void insert(int data, int index) {
+		int current = 0;
+		Node node =  new Node(data, null);
+		if(current==index) {
+			head=node;
+		}else {
+			Node n= head;
+			current=current+1;
+			while(n.next!=null) {
+				if(current==index) {
+					Node temp= n.next;
+					n.next=node;
+					node.next=temp;
+				}
+				n=n.next;
+				current++;
+			}
+			
+		}
+		
+	}
+	public void insertAtStart(int data) {
+		Node node =  new Node(data, null);
+		node.next=head;
+		head=node;
+	}
+	public void show() {
+		Node n= head;
+		while(n.next!=null) {
+			System.out.println(n.data);
+			n=n.next;
+		}
+		System.out.println(n.data);
+	}
+	
+	
+	public static void main(String[] args) {
+		LinkedList linkedList = new LinkedList(new Node(0, new Node(1, new Node(3, null))));
+		//linkedList.show();
+		linkedList.insert(9);
+		linkedList.insertAtStart(10);
+		linkedList.insert(111,3);
+		linkedList.show();
+
+	}
+
+}

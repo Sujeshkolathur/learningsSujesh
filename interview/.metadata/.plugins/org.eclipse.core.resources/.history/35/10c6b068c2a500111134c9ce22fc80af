@@ -1,0 +1,28 @@
+package interview.coding1;
+
+import java.util.HashSet;
+import java.util.Scanner;
+import java.util.Set;
+
+public class LongestSubString {
+
+	public static void main(String[] args) {
+		Scanner sc= new Scanner(System.in);
+		System.out.println("enter a word");
+		String word = "sujesh";
+		int firstIndex=0;
+		int maxLength = 0;
+		Set<Character> chars = new HashSet<>();
+		for(int i=0;i<word.length();i++) {
+			if(chars.contains(word.charAt(i))) {
+				chars.remove(word.charAt(firstIndex));
+				firstIndex++;
+			}
+			chars.add(word.charAt(i));
+			maxLength=Math.max(maxLength, i-firstIndex+1);
+		}
+		System.out.println(maxLength);
+
+	}
+
+}

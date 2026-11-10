@@ -1,0 +1,9 @@
+package designpatter.behavioural.state;
+
+public class FanContext {
+	
+	public interface FanState {
+		void pullChain();
+	}
+
+}

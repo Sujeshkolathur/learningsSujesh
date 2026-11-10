@@ -1,0 +1,13 @@
+package interview;
+
+public class HashCodeEqualsContract {
+
+	public static void main(String[] args) {
+		
+	}
+
+}
+
+class Person{
+	String name;
+}

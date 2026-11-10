@@ -1,0 +1,5 @@
+package designpatter.behavioural;
+
+public class State {
+
+}

@@ -1,0 +1,28 @@
+package interview.coding1;
+
+import java.util.HashSet;
+import java.util.Set;
+
+public class FindDuplicate {
+
+	public static void main(String[] args) {
+//		Find duplicate number
+//		Problem
+//		Input:  [1, 2, 3, 4, 3, 5]
+//		Output: 3
+		int[] array=  {1, 2, 3, 4, 3, 5};
+		System.out.println(extracted(array));
+	}
+
+	private static int extracted(int[] array) {
+		Set<Integer> intSet = new HashSet<>();
+		for (int i = 0; i < array.length; i++) {
+			if(!intSet.add(array[i])) {
+				return array[i];
+			}
+			
+		}
+		return null;
+	}
+
+}

@@ -1,0 +1,30 @@
+package interview;
+
+import java.util.HashSet;
+import java.util.Set;
+
+public class LongestSubstring {
+
+	public static void main(String[] args) {
+		String str=  new String("sujsefsh");
+		System.out.println(findLongest(str));
+
+	}
+	public static int  findLongest(String s) {
+		int left=0;
+		Set<Character> characters =  new HashSet<>();
+		int max=0;
+		
+		for (int i = 0; i < s.length(); i++) {
+			while(characters.contains(s.charAt(i))) {
+				characters.remove(s.charAt(left));
+				left++;
+			}
+			characters.add(s.charAt(i));
+			max=Math.max(max, i-left);
+		}
+		
+		return max;
+		
+	}
+}
